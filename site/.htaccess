@@ -1,0 +1,4 @@
+AuthName "Secure Administrations' Page"
+AuthType Basic
+AuthUserFile "C:/wamp/www/EIPV2/.htpasswd"
+Require valid-user
