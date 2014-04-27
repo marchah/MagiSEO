@@ -19,7 +19,6 @@ require_once('include/menu.html');
 
 				<div class="row">
 					<!-- START Left Side (Informations Servers) -->
-					
 					<?php
 						require_once('PHP/getHTMLCode.php');
 						echo getHTMLAllPanelServer();
