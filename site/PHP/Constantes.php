@@ -1,7 +1,7 @@
 <?php
 
 define('BDD_HOST', 'localhost');
-define('BDD_DBNAME', 'server');
+define('BDD_DBNAME', 'magiseo');
 define('BDD_USERNAME', 'root');
 define('BDD_PASSWORD', '');
 
