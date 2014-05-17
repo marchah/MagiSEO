@@ -1,4 +1,5 @@
 <?php
+require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/Object/User.class.php';
 @session_start();
 require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/DAO/DAO.class.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/Object/Server.class.php';
@@ -14,7 +15,7 @@ class ServerDAO extends DAO {
 				'keysshpath' => $keysshpath,
 				'id' => $id
 			))) {
-				ReportDAO::insertReport(new Report($_SESSION['id'], "REQUEST SQL FAILED", "ServerDAO::uploadKeySSHPath()", REPORTING_TYPE_INTERNAL_ERROR));
+				ReportDAO::insertReport(new Report($_SESSION['user']->getId(), "REQUEST SQL FAILED", "ServerDAO::uploadKeySSHPath()", REPORTING_TYPE_INTERNAL_ERROR));
 				return false;
 			}
 		return true;
@@ -30,11 +31,28 @@ class ServerDAO extends DAO {
 				'password' => $password,
 				'keysshpath' => $keysshpath
 			))) {
-				ReportDAO::insertReport(new Report($_SESSION['id'], "REQUEST SQL FAILED", "ServerDAO::insertServer()", REPORTING_TYPE_INTERNAL_ERROR));
+				ReportDAO::insertReport(new Report($_SESSION['user']->getId(), "REQUEST SQL FAILED", "ServerDAO::insertServer()", REPORTING_TYPE_INTERNAL_ERROR));
 				return false;
 			}
 		return true;
 	}
+        
+        static function updateServerBasicServer($id, $IPV4, $name, $username, $password) {
+            $bdd = parent::ConnectionBDD();
+            
+            $req = $bdd->prepare('UPDATE server_slave SET ipv4=:IPV4, name=:name, username=:username, password=:password WHERE id=:id');
+            if (!$req->execute(array(
+				'IPV4' => $IPV4,
+                                'name' => $name,
+				'username' => $username,
+				'password' => $password,
+                                'id' => $id
+			))) {
+				ReportDAO::insertReport(new Report($_SESSION['user']->getId(), "REQUEST SQL FAILED", "ServerDAO::updateServerBasicServer()", REPORTING_TYPE_INTERNAL_ERROR));
+				return false;
+			}
+		return true;
+        }
         
         static function getListSlaveServer() {
             $bdd = parent::ConnectionBDD();

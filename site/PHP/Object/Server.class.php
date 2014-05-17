@@ -59,9 +59,9 @@ class Server {
     public function getNbMaxProc() {return $this->_nbMaxProc;}
     public function setState($state) {$this->_state = $state;}
     public function getState() {return $this->_state;}
-	public function setUsername($username) {$this->_username = $username;}
+    public function setUsername($username) {$this->_username = $username;}
     public function getUsername() {return $this->_username;}
-	public function setPassword($password) {$this->_password = $password;}
+    public function setPassword($password) {$this->_password = $password;}
     public function getPassword() {return $this->_password;}
 }
 

@@ -18,8 +18,56 @@ require_once('include/menu.html');
 				</div>
 				<!-- Page Header -->
 
+                                <!-- START Add Slave Server -->
+                                <div id="AddSlaveServerModal" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabe" aria-hidden="true">
+                                  <div class="modal-dialog modal-sm">
+
+                                        <div class="modal-content">
+                                                <form>
+                                                        <div class="modal-header">
+                                                                <h4 class="modal-title">Add A Slave Server</h4>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                                <div>
+                                                                        <label for="add-slave-server-name">Name</label>
+                                                                        <input id="add-slave-server-name" class="form-control" type="input" name="add-slave-server-name" />
+                                                                </div>
+                                                                <div>
+                                                                        <label for="add-slave-server-ip">IPV4</label>
+                                                                        <input id="add-slave-server-ip" class="form-control" type="input" name="add-slave-server-ip" />
+                                                                </div>
+                                                                <div>
+                                                                        <label for="add-slave-server-login">Login</label>
+                                                                        <input id="add-slave-server-login" class="form-control" type="input" name="add-slave-server-login" />
+                                                                </div>
+                                                                <div>
+                                                                        <label for="add-slave-server-password">Password</label>
+                                                                        <input id="add-slave-server-password" class="form-control" type="password" name="add-slave-server-password" />
+                                                                </div>
+                                                                <div>
+                                                                        <label for="add-slave-server-password-confirmation">Password Confirmation</label>
+                                                                        <input id="add-slave-server-password-confirmation" class="form-control" type="password" name="add-slave-server-password-confirmation" />
+                                                                </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <span id="add-slave-server-failed" style="display:none;"></span>
+                                                            <input id="add-slave-server-button" class="btn btn-success" type="button" name="submit" value="Add" />
+                                                        </div>
+                                                </form>
+                                        </div>
+                                  </div>
+                                </div>
+                                <!--/ END Add Slave Server -->
+                                
+                                
 				<div class="row">
 					<!-- START Left Side (Informations Servers) -->
+                                        <button id="add-slave-server" class="btn btn-info ladda-button ladda-progress mb5" data-style="expand-right">
+                                            <span class="ladda-label">Add A Slave Server</span>
+                                            <span class="ladda-spinner"></span>
+                                            <span class="ladda-spinner"></span>
+                                            <div class="ladda-progress" style="width: 100px;"></div>
+                                        </button>
 					<?php
 						require_once('PHP/getHTMLCode.php');
 						echo getHTMLAllPanelServer();
