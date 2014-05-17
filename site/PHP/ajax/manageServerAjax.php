@@ -1,22 +1,18 @@
 <?php
 require_once('../PHP/Tools.php');
-
+require_once('../PHP/DAO/ServerDAO.php');
 
 header("Content-Type: text/plain");
 
-if (!set_include_path(get_include_path() . PATH_SEPARATOR . $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/phpseclib'))
-	exit(ERROR_SSH_SYSTEM); // REPORT ERROR
+if (!set_include_path(get_include_path() . PATH_SEPARATOR . $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/phpseclib')) {
+		Tools::Reporting(!Tools::IsAuth() ? 0 : $_SESSION['id'], "Internal Error", "set_include_path() failed on manageServerAjax.php", REPORTING_TYPE_INTERNAL_ERROR);
+		exit(ERROR_SYSTEM);
+	}
 	
 set_error_handler('errorHandler', E_USER_NOTICE);
 
 function errorHandler($errno, $errstr, $errfile, $errline) {
-	
-	/*"PHPseclib internal error: "
-    . "errno=". $errno .", "
-	. "errstr=". $errstr .", "
-	. "errfile". $errfile .", "
-	. "errline". $errline .", "*/	// REPORT ERROR
-	
+	Tools::Reporting($_SESSION['id'], "PHPseclib internal error", "errno=". $errno .", ". "errstr=". $errstr .", ". "errfile:". $errfile .", ". "errline:". $errline, REPORTING_TYPE_ERROR);
 	exit(ERROR_SSH_SYSTEM);
 }
 
@@ -44,7 +40,8 @@ function installServer($bdd) {
 	$ssh->exec("ssh-keygen -t dsa -f ". $PATH_FILE_PRIVATE_KEY_SSH ." -N ''");
 	if (!file_put_contents($PATH_MASTER_PUBLIC_KEY_SSH .'/'. $ipServerSSH, $ssh->exec("cat ". $PATH_FILE_PRIVATE_KEY_SSH))) {
 		$_SESSION[INSTALL_SERVER_STEP] = INSTALL_SERVER_STEP_ERROR;
-		exit(ERROR_SSH_DOWNLOAD_KEY_FAILED); 	// REPORT ERROR
+		Tools::Reporting($_SESSION['id'], "SSH Download File Error", ERROR_SSH_DOWNLOAD_KEY_FAILED, REPORTING_TYPE_SLAVE_ERROR);
+		exit(ERROR_SSH_DOWNLOAD_KEY_FAILED);
 	}
 	// save path file in DB
 	$ssh->exec('chmod 0600 '. $PATH_DIR_KEY_SSH .'/*');
@@ -66,12 +63,16 @@ function installServer($bdd) {
 			//." echo \"AllowGroups $GROUP_SSH_ALLOW\" >> $PATH_FILE_CONFIG_SSH;\"\n");
 	$ssh->write("su -c \"/etc/init.d/ssh restart\"\n");
 	$_SESSION[INSTALL_SERVER_STEP] = INSTALL_SERVER_STEP_DONE;
-	// enregistrer log
+	Tools::Reporting($_SESSION['id'], "Install Server Slave", "Success", REPORTING_TYPE_LOG);
 	echo true;
 }
 
 if (isset($_POST["nameRequest"])) {
-	$bdd = ConnectionBDD();
+	$bdd = Tools::ConnectionBDD();
+	if (!Tools::IsAuth()) {
+		Tools::Reporting(0, "Security Warning", "call to ". $_POST["nameRequest"] ."() without be auth", REPORTING_TYPE_SECURITY);
+		exit(ERROR_REQUIRE_AUTH);
+	}
 	if ($_POST["nameRequest"] == "installServer")
 		installServer($bdd);
 }

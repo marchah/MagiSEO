@@ -3,10 +3,10 @@ function Authentification() {}
 Authentification.authentification = function(userLogin, userPassword) {
 	$.ajax({
 	   type: "POST",
-	   url: urlServer + "ajax/authentificationAjax.php",
+	   url: urlServer + ajaxFolderPath + "authentificationAjax.php",
 	   data:{nameRequest: "authentification", login: userLogin, password: userPassword},
 	   dataType: document.json,
-	   error: function (xhr, ajaxOptions, thrownError) { if (xhr.status == 404) authFailed("Incorrect login/password"); else console.log('error:', xhr); $("#img_loading_auth").css('display', 'none');},
+	   error: function (xhr) { if (xhr.status == 404) authFailed("Incorrect login/password"); else console.log('error:', xhr.responseText); $("#img_loading_auth").css('display', 'none');},
 	   success: function (isAuth) {
 			if (isAuth == true)
 				authSucces();
@@ -18,10 +18,10 @@ Authentification.authentification = function(userLogin, userPassword) {
 Authentification.disconnection = function() {
 	$.ajax({
 	   type: "POST",
-	   url: urlServer + "ajax/authentificationAjax.php",
+	   url: urlServer + ajaxFolderPath + "authentificationAjax.php",
 	   data:{nameRequest: "disconnection"},
 	   dataType: document.json,
-	   error: function (xhr, ajaxOptions, thrownError) { console.log('error:', xhr); location.reload(); },
+	   error: function (xhr) { console.log('error:', xhr.responseText); location.reload(); },
 	   success: function () {
 			location.reload() ; 
 		}
@@ -42,10 +42,10 @@ function authSucces() {
 	$('#authentificationModal').modal('hide');
 	$.ajax({
 	   type: "POST",
-	   url: urlServer + "ajax/getHTMLCodeAjax.php",
+	   url: urlServer + ajaxFolderPath + "getHTMLCodeAjax.php",
 	   data:{nameRequest: "getHTMLUSerButtonAuth"},
 	   dataType: document.json,
-	   error: function (xhr, ajaxOptions, thrownError) { if (xhr.status == 401) alert('Error: ' + xhr.statusText); console.log('error:', xhr); },
+	   error: function (xhr) { if (xhr.status == 401) alert('Error: ' + xhr.statusText); console.log('error:', xhr.responseText); },
 	   success: function (HTMLCode) {
 			if (HTMLCode != false)
 				$('#btn_authentification').replaceWith(HTMLCode);

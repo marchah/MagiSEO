@@ -1,7 +1,7 @@
 <?php
 @session_start();
-
-require_once('getServerInformation.php');
+require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/Object/Server.class.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/DAO/ServerDAO.class.php';
 
 function getHTMLUserButtonAuth() {
 	if (isset($_SESSION['auth']) && $_SESSION['auth'] == true)
@@ -11,8 +11,8 @@ function getHTMLUserButtonAuth() {
 					<li class="dropdown profile">
 						<a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown">
 							<span class="meta">
-								<span class="avatar"><img src="'. $_SESSION['avatarPath'] .'" class="img-circle" alt=""></span>
-								<span class="text hidden-xs hidden-sm">'. ucfirst($_SESSION['firstName']) .' '. strtoupper($_SESSION['lastName']) .'</span>
+								<span class="avatar"><img src="'. $_SESSION['user']->getAvatarPath() .'" class="img-circle" alt=""></span>
+								<span class="text hidden-xs hidden-sm">'. ucfirst($_SESSION['user']->getFirstName()) .' '. strtoupper($_SESSION['user']->getLastName()) .'</span>
 								<span class="arrow"></span>
 							</span>
 						</a>
@@ -22,14 +22,12 @@ function getHTMLUserButtonAuth() {
 					</li>
 					<!--/ Profile dropdown -->
 				</ul>';
-	//http_response_code(401); for PHP > 5.4
-	header(':', true, 401);
-	header('X-PHP-Response-Code: 401', true, 401);
+	http_response_code(401);
 	return false;
 }
 
 function getHTMLAllPanelServer() {
-	$listServer = getAllServerInfo();
+	$listServer = ServerDAO::getListSlaveServer();
 	
 	$HTMLAllPanelServer = "";
 	
