@@ -76,7 +76,7 @@ $ssh->write("su -c \"sed -i 's/^Port [0-9][0-9]*$/Port $SSH_PORT/' $PATH_FILE_CO
 			."sed -i 's/^UsePAM [a-zA-Z][a-zA-Z]*$/UsePAM no/' $PATH_FILE_CONFIG_SSH; "
 			."sed -i 's/^KerberosAuthentication [a-zA-Z][a-zA-Z]*$/KerberosAuthentication no/' $PATH_FILE_CONFIG_SSH; "
 			."sed -i 's/^GSSAPIAuthentication [a-zA-Z][a-zA-Z]*$/GSSAPIAuthentication no/' $PATH_FILE_CONFIG_SSH; "
-			."sed -i 's/^PasswordAuthentication [a-zA-Z][a-zA-Z]*$/PasswordAuthentication no/' $PATH_FILE_CONFIG_SSH; "
+			/*."sed -i 's/^PasswordAuthentication [a-zA-Z][a-zA-Z]*$/PasswordAuthentication no/' $PATH_FILE_CONFIG_SSH; "*/
 			."sed -i 's/^#MaxStartups [0-9:][0-9:]*$/MaxStartups $MAX_STARTUPS/' $PATH_FILE_CONFIG_SSH; "
 			."sed -i 's/^MaxStartups [0-9:][0-9:]*$/MaxStartups $MAX_STARTUPS/' $PATH_FILE_CONFIG_SSH;\"\n");
 			//." echo \"AllowGroups $GROUP_SSH_ALLOW\" >> $PATH_FILE_CONFIG_SSH;\"\n");

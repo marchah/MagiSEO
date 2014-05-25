@@ -6,36 +6,35 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/Object/Server.class.
 require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/DAO/ReportDAO.class.php';
 
 class ServerDAO extends DAO {
-
-	static function uploadKeySSHPath($id, $keysshpath) {
-		$bdd = parent::ConnectionBDD();
-		
-		$req = $bdd->prepare("UPDATE server_slave SET keysshpath WHERE id = :id");
-		if (!$req->execute(array(
-				'keysshpath' => $keysshpath,
-				'id' => $id
-			))) {
-				ReportDAO::insertReport(new Report($_SESSION['user']->getId(), "REQUEST SQL FAILED", "ServerDAO::uploadKeySSHPath()", REPORTING_TYPE_INTERNAL_ERROR));
-				return false;
-			}
-		return true;
-	}
 	
 	static function insertServer($IPV4, $username, $password, $keysshpath) { // MANQUE BEAUCOUP D'INFO A SAVE
-		$bdd = parent::ConnectionBDD();
-		
-		$req = $bdd->prepare('INSERT INTO server_slave (IPV4, username, password, keysshpath) VALUES(:IPV4, :username, :password, :keysshpath)');
-		if (!$req->execute(array(
-				'IPV4' => $IPV4,
-				'username' => $username,
-				'password' => $password,
-				'keysshpath' => $keysshpath
-			))) {
-				ReportDAO::insertReport(new Report($_SESSION['user']->getId(), "REQUEST SQL FAILED", "ServerDAO::insertServer()", REPORTING_TYPE_INTERNAL_ERROR));
-				return false;
-			}
-		return true;
+            $bdd = parent::ConnectionBDD();
+
+            $req = $bdd->prepare('INSERT INTO server_slave (IPV4, username, password, keysshpath) VALUES(:IPV4, :username, :password, :keysshpath)');
+            if (!$req->execute(array(
+                            'IPV4' => $IPV4,
+                            'username' => $username,
+                            'password' => $password,
+                            'keysshpath' => $keysshpath
+                    ))) {
+                            ReportDAO::insertReport(new Report($_SESSION['user']->getId(), "REQUEST SQL FAILED", "ServerDAO::insertServer()", REPORTING_TYPE_INTERNAL_ERROR));
+                            return false;
+                    }
+            return true;
 	}
+        
+        static function deleteServer($IPV4) { // manque beaucoup d'info a delete et plutot prendre Server
+            $bdd = parent::ConnectionBDD();
+
+            $req = $bdd->prepare('DELETE FROM server_slave WHERE IPV4=:IPV4');
+            if (!$req->execute(array(
+                            'IPV4' => $IPV4
+                    ))) {
+                            ReportDAO::insertReport(new Report($_SESSION['user']->getId(), "REQUEST SQL FAILED", "ServerDAO::deletetServer()", REPORTING_TYPE_INTERNAL_ERROR));
+                            return false;
+                    }
+            return true;
+        }
         
         static function updateServerBasicServer($id, $IPV4, $name, $username, $password) {
             $bdd = parent::ConnectionBDD();
@@ -69,6 +68,16 @@ class ServerDAO extends DAO {
             }
             $reponse->closeCursor();
             return $listServer;
+        }
+        
+        static function isServerExist($IPV4) {
+            $bdd = parent::ConnectionBDD();
+            
+            $reponse = $bdd->query("SELECT COUNT(id) AS NB FROM server_slave WHERE ipv4=\"$IPV4\"");
+            
+            if ($data = $reponse->fetch())
+                return intval($data['NB']) > 0 ? true : false;
+            return false;
         }
 }
 

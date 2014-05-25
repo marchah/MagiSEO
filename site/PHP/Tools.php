@@ -5,7 +5,7 @@ require_once('ErrorConstantes.php');
 
 class Tools {
 
-    static function ConnectionBDD() {
+    /*static function ConnectionBDD() {
             try
             {
                     return new PDO('mysql:host='. BDD_HOST .';dbname='. BDD_DBNAME, BDD_USERNAME, BDD_PASSWORD);
@@ -26,7 +26,7 @@ class Tools {
                     'type' => $type,
                     'date' => date("d/m/y")
             ]);
-    }
+    }*/
 
     static function IsAuth() {
             return (isset($_SESSION['auth']) && $_SESSION['auth'] == true) ? true : false;

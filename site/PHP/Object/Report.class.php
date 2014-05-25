@@ -19,9 +19,6 @@ class Report {
             $this->_type = $type;
             $this->_date = $date;
 	}
-        
-
-        
 
         public function getId()             {return $this->_id;}
         public function getIdUser()         {return $this->_idUser;}
