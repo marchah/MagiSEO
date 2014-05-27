@@ -17,7 +17,7 @@ class ServerDAO extends DAO {
                             'password' => $password,
                             'keysshpath' => $keysshpath
                     ))) {
-                            ReportDAO::insertReport(new Report($_SESSION['user']->getId(), "REQUEST SQL FAILED", "ServerDAO::insertServer()", REPORTING_TYPE_INTERNAL_ERROR));
+                            ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), "", "REQUEST SQL FAILED", "ServerDAO::insertServer()", REPORTING_TYPE_INTERNAL_ERROR, date("Y-m-d H:i:s")));
                             return false;
                     }
             return true;
@@ -30,7 +30,7 @@ class ServerDAO extends DAO {
             if (!$req->execute(array(
                             'IPV4' => $IPV4
                     ))) {
-                            ReportDAO::insertReport(new Report($_SESSION['user']->getId(), "REQUEST SQL FAILED", "ServerDAO::deletetServer()", REPORTING_TYPE_INTERNAL_ERROR));
+                            ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), "", "REQUEST SQL FAILED", "ServerDAO::deletetServer()", REPORTING_TYPE_INTERNAL_ERROR, date("Y-m-d H:i:s")));
                             return false;
                     }
             return true;
@@ -47,7 +47,7 @@ class ServerDAO extends DAO {
 				'password' => $password,
                                 'id' => $id
 			))) {
-				ReportDAO::insertReport(new Report($_SESSION['user']->getId(), "REQUEST SQL FAILED", "ServerDAO::updateServerBasicServer()", REPORTING_TYPE_INTERNAL_ERROR));
+				ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), "", "REQUEST SQL FAILED", "ServerDAO::updateServerBasicServer()", REPORTING_TYPE_INTERNAL_ERROR), date("Y-m-d H:i:s"));
 				return false;
 			}
 		return true;

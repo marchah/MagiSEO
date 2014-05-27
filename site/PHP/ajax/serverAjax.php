@@ -57,6 +57,7 @@ function installServer() {
         ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), $_SESSION['user']->getLogin(), "SSH Create File Private Key Error", ERROR_SSH_DOWNLOAD_KEY_FAILED, REPORTING_TYPE_SLAVE_ERROR, date("Y-m-d H:i:s")));
         exit(ERROR_SSH_DOWNLOAD_KEY_FAILED);
     }
+    $_SESSION[INSTALL_SERVER_STEP] = INSTALL_SERVER_STEP_SECURING_SSH;
     $ssh->read('/.*@.*[$|#]/', NET_SSH2_READ_REGEX);
     $ssh->write("su -c \""
                     ."cp ".PATH_FILE_CONFIG_SSH." ".PATH_FILE_CONFIG_SSH_SAVE."; "
@@ -79,7 +80,7 @@ function installServer() {
                     ."sed -i 's/^[#]*UsePAM [a-zA-Z][a-zA-Z]*$/UsePAM no/' ".PATH_FILE_CONFIG_SSH."; "
                     ."sed -i 's/^[#]*KerberosAuthentication [a-zA-Z][a-zA-Z]*$/KerberosAuthentication no/' ".PATH_FILE_CONFIG_SSH."; "
                     ."sed -i 's/^[#]*GSSAPIAuthentication [a-zA-Z][a-zA-Z]*$/GSSAPIAuthentication no/' ".PATH_FILE_CONFIG_SSH."; "
-                    ."sed -i 's/^[#]*PasswordAuthentication [a-zA-Z][a-zA-Z]*$/PasswordAuthentication no/' ".PATH_FILE_CONFIG_SSH."; "
+                    ."sed -i 's/^[#]*PasswordAuthentication [a-zA-Z][a-zA-Z]*$/PasswordAuthentication no/' ".PATH_FILE_CONFIG_SSH."; " // DOESN'T WORK ON UBUNTU
                     ."sed -i 's/^[#]*MaxStartups [0-9:][0-9:]*$/MaxStartups ".MAX_STARTUPS."/' ".PATH_FILE_CONFIG_SSH."; "
                     ."sed -i 's/^[#]*PubkeyAuthentication [a-zA-Z][a-zA-Z]*$/PubkeyAuthentication yes/' ".PATH_FILE_CONFIG_SSH."; "
                     ."sed -i 's/^[#]*AuthorizedKeysFile.*$/AuthorizedKeysFile ".str_replace("/", "\/", PATH_FILE_AUTHORIZED_KEYS)."/' ".PATH_FILE_CONFIG_SSH."; "
@@ -87,7 +88,7 @@ function installServer() {
                     ."/etc/init.d/ssh restart"
                 . "\"\n ");
     $ssh->read('/.*@.*[$|#]/', NET_SSH2_READ_REGEX);
-
+    //installSoftware($ssh);
     $_SESSION[INSTALL_SERVER_STEP] = INSTALL_SERVER_STEP_DONE;
     ServerDAO::insertServer($ipServerSSH, $login, $password, $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/' . PATH_MASTER_PRIVATE_KEY_SSH . $ipServerSSH);
     ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), $_SESSION['user']->getLogin(), "Install Server Slave $ipServerSSH", "Success", REPORTING_TYPE_LOG, date("Y-m-d H:i:s")));
@@ -106,7 +107,7 @@ function desinstallServer() {
     }
     
     if (!ServerDAO::isServerExist($ipServerSSH)) {
-        $_SESSION[INSTALL_SERVER_STEP] = INSTALL_SERVER_STEP_ERROR;
+        $_SESSION[DESINSTALL_SERVER_STEP] = INSTALL_SERVER_STEP_ERROR;
         ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), $_SESSION['user']->getLogin(), "Desinstall Server Slave $ipServerSSH", "This server hasn't been configurated before.", REPORTING_TYPE_SECURITY, date("Y-m-d H:i:s")));
         exit(ERROR_SSH_SERVER_NOT_CONFIGURATED);
     }
@@ -119,6 +120,7 @@ function desinstallServer() {
         $_SESSION[DESINSTALL_SERVER_STEP] = DESINSTALL_SERVER_STEP_ERROR;
         exit(ERROR_SSH_CONNECTION_INVALID_AUTH);
     }
+    $_SESSION[DESINSTALL_SERVER_STEP] = DESINSTALL_SERVER_STEP_DESECURING_SSH;
     $ssh->read('/.*@.*[$|#]/', NET_SSH2_READ_REGEX);
     $ssh->write("su -c \"/usr/sbin/delgroup ".GROUP_SSH_ALLOW."\"; "
             ."rm -rf ".PATH_DIR_KEY_SSH."; "
@@ -126,10 +128,30 @@ function desinstallServer() {
             ."su -c \"/etc/init.d/ssh restart\"; "
             . "\n");
     $ssh->read('/.*@.*[$|#]/', NET_SSH2_READ_REGEX);
+    //removeSoftware($ssh);
     $_SESSION[DESINSTALL_SERVER_STEP] = DESINSTALL_SERVER_STEP_DONE;
     ServerDAO::deleteServer($ipServerSSH);
     ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), $_SESSION['user']->getLogin(), "Desinstall Server Slave $ipServerSSH", "Success", REPORTING_TYPE_LOG, date("Y-m-d H:i:s")));
     echo true;
+}
+
+function installSoftware($ssh) {
+    $_SESSION[INSTALL_SERVER_STEP] = INSTALL_SERVER_STEP_INSTALLING_SOFTWARE;
+    $ssh->write("su -c \""
+                    ."apt-get install -y aptitude; "
+                    ."aptitude install -y apache2; " //php5 mysql-server php5-mysql libapache2-mod-php5; " //MysqlPasswordPB pas sur que j'en ai besoins demandé à julien
+                    ."/etc/init.d/apache2 restart; "
+                    ."aptitude install -y virtualbox; "
+                . "\"\n");
+}
+
+function removeSoftware($ssh) {
+    $_SESSION[DESINSTALL_SERVER_STEP] = DESINSTALL_SERVER_STEP_DESINSTALLING_SOFTWARE;
+    $ssh->write("su -c \""
+                    ."aptitude remove -y virtualbox; "
+                    ."aptitude remove -y apache2; "//php5 mysql-server php5-mysql libapache2-mod-php5; "
+                    ."aptitude autoremove"
+                . "\"\n");
 }
 
 function connectionServerWithKey() {
