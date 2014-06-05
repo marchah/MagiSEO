@@ -56,11 +56,15 @@ class ServerDAO extends DAO {
         static function getListSlaveServer() {
             $bdd = parent::ConnectionBDD();
 	
-            $reponse = $bdd->query('SELECT sslave.*, sstate.state, sstate.on_off, sinfo.disk_max_size, sinfo.disk_current_size, 
+            /*$reponse = $bdd->query('SELECT sslave.*, sstate.state, sstate.on_off, sinfo.disk_max_size, sinfo.disk_current_size, 
                                                             sinfo.nb_max_proc, sinfo.nb_current_proc, sinfo.flash_max_size, sinfo.flash_current_size 
                                                             FROM server_slave sslave 
                                                             INNER JOIN server_state sstate ON sslave.id = sstate.id 
-                                                            INNER JOIN server_information sinfo ON sslave.id = sinfo.id');
+                                                            INNER JOIN server_information sinfo ON sslave.id = sinfo.idserver');*/
+            $reponse = $bdd->query('SELECT sslave.*, sinfo.disk_max_size, sinfo.disk_current_size, 
+                                                            sinfo.nb_max_proc, sinfo.nb_current_proc, sinfo.flash_max_size, sinfo.flash_current_size 
+                                                            FROM server_slave sslave 
+                                                            INNER JOIN server_information sinfo ON sslave.id = sinfo.idserver');
             $listServer = array();
             while ($data = $reponse->fetch()) {
                     $server = new Server($data);
@@ -68,6 +72,21 @@ class ServerDAO extends DAO {
             }
             $reponse->closeCursor();
             return $listServer;
+        }
+        
+        static function getNewSlaveServer() {
+            $bdd = parent::ConnectionBDD();
+            
+            $reponse = $bdd->query('SELECT sslave.*, sinfo.disk_max_size, sinfo.disk_current_size, 
+                                                            sinfo.nb_max_proc, sinfo.nb_current_proc, sinfo.flash_max_size, sinfo.flash_current_size 
+                                                            FROM server_slave sslave 
+                                                            INNER JOIN server_information sinfo ON sslave.id = sinfo.idserver ORDER BY sslave.id DESC LIMIT 1');
+            $server;
+            if ($data = $reponse->fetch()) {
+                    $server = new Server($data);	
+            }
+            $reponse->closeCursor();
+            return $server;
         }
         
         static function isServerExist($IPV4) {
