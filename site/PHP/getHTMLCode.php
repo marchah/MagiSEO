@@ -46,6 +46,35 @@ function getHTMLAllPanelServer() {
 							<button class="btn up" data-toggle="panelcollapse"><i class="arrow"></i></button>
 						</div>
 						<!--/ option -->
+                                                <!-- panel toolbar button -->
+                                                '.
+							((isset($_SESSION['auth']) && $_SESSION['auth'] == true) ? 
+							('
+								<div class="btn-group">
+                                                                    <button class="btn btn-sm btn-danger dropdown-toggle" data-toggle="dropdown" type="button">
+                                                                        Action
+                                                                        <span class="caret"></span>
+                                                                    </button>
+                                                                    <ul class="dropdown-menu pull-right">
+                                                                        <li>
+                                                                            <a href="javascript:void(0);">
+                                                                                Update
+                                                                            </a>
+                                                                        </li>
+                                                                        <li class="divider"></li>
+                                                                        <li>
+                                                                            <a class="text-danger" href="javascript:void(0);">
+                                                                                Delete
+                                                                            </a>
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
+							')
+							: 
+							(''))
+							.'
+                                                    
+                                            <!-- panel toolbar button -->
 					</div>
 					<!--/ panel toolbar -->
 				</div>
@@ -89,14 +118,14 @@ function getHTMLAllPanelServer() {
 							</div>
 							<div class="form-group footer-server-info">
 							'.
-							((isset($_SESSION['auth']) && $_SESSION['auth'] == true) ? 
+							/*((isset($_SESSION['auth']) && $_SESSION['auth'] == true) ? 
 							('
 								<button type="button" class="btn btn-success btn-update-server">Update</button>
 								<img class="img_loading_update_server" src="image/spinner.gif" alt="Loading ..." style="display:none;margin-right: 10px; float:right;margin-top: 8px;" />
 							')
 							: 
 							(''))
-							.'
+							.*/'
 							</div>
 						</div>
 					</div>
