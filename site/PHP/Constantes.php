@@ -14,4 +14,6 @@ define('REPORTING_TYPE_INTERNAL_ERROR', 5);
 
 define('LOG_NB_LIMIT', 10);
 
+define('PATH_ROOT_WEBSITE', $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/');
+
 ?>

@@ -1,18 +1,67 @@
 function Server() {}
 
-Server.addSlaveServer = function (name, ipv4, login, password) {
+Server.displayNewPanelServer = function () {
+    $.ajax({
+       type: "POST",
+       url: urlServer + ajaxFolderPath + "getHTMLCodeAjax.php",
+       data:{nameRequest: "getHTMLPanelNewServer"},
+       dataType: document.json,
+       error: function (xhr) { console.log('error:', xhr.responseText);},
+       success: function (panel) {
+            $("#list-planel").append(panel);
+        }
+    });
+}
+
+Server.addSlaveServer = function (ipv4, login, password) {
+    var x = setInterval(Server.progressInstall, 2000);
     $.ajax({
        type: "POST",
        url: urlServer + ajaxFolderPath + "serverAjax.php",
-       data:{nameRequest: "installServer", name: name, ipv4: ipv4, login: login, password: password},
+       data:{nameRequest: "installServer", ipServerSSH: ipv4, login: login, password: password},
        dataType: document.json,
+       /*beforeSend: function () {
+           Server.progressInstall();
+       },*/
        error: function (xhr) { console.log('error:', xhr.responseText);},
        success: function (str) {
+            if (str == true) 
+                Server.displayNewPanelServer();
+            else
                 alert(str);
+        },
+        complete : function() {
+            clearInterval(x);
+            Server.progressInstall();
+        }
+    });
+}
+
+Server.progressInstall = function () {
+    $("#progress-bar-container-install-server").css("display", "block");
+    $.ajax({
+       type: "POST",
+       url: urlServer + ajaxFolderPath + "progressAjax.php",
+       data:{nameRequest: "getStateInstall"},
+       dataType: document.json,
+       error: function (xhr) { console.log('error:', xhr.responseText);},
+       success: function (step) {
+                var result = step.split('/');
+                
+                var current = parseInt(result[0]) + 1;
+                var msg = result[1];
+                var max = parseInt(result[2]) + 1;
+                
+                if (current >= 0) { 
+                    var maxSize = parseInt($("#progress-bar-container-install-server").css("width"));
+                    $("#progress-bar-install-server-slave").css("width", maxSize / max * current + "px");
+                }
+                $("#state-install-server-slave").text(msg);
             }
     });
 }
 
+/*
 Server.updateInfo = function(form, id, ipv4, name, login, password) {
     $.ajax({
        type: "POST",
@@ -44,7 +93,7 @@ var attachEventOnUpdateServerButton = function() {
         var password = $(form).find('.password-server-slave').val();
         Server.updateInfo(form, id, ipv4, name, username, password);
     });
-}
+}*/
 
 
 $('#add-slave-server').click(function() {
@@ -62,11 +111,6 @@ function Require(errorMsg) {
 $('#add-slave-server-button').click(function(){
     $("#add-slave-server-failed").text('');
     $("#add-slave-server-failed").css('display', 'none');
-    if ($("#add-slave-server-name").val().length < 1) {
-        Require("Name required");
-        $("#add-slave-server-name").focus();
-        return ;
-    }
     if ($("#add-slave-server-ip").val().length < 1) {
         Require("IPV4 required");
         $("#add-slave-server-ip").focus();
@@ -88,8 +132,8 @@ $('#add-slave-server-button').click(function(){
         $("#add-slave-server-password-confirmation").focus();
         return ;
     }
-
+    Server.addSlaveServer($("#add-slave-server-ip").val(), $("#add-slave-server-login").val(), $("#add-slave-server-password").val());
     $('#AddSlaveServerModal').modal('hide');
 });
 
-attachEventOnUpdateServerButton();
+//attachEventOnUpdateServerButton();

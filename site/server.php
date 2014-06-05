@@ -29,10 +29,6 @@ require_once('include/menu.html');
                                                         </div>
                                                         <div class="modal-body">
                                                                 <div>
-                                                                        <label for="add-slave-server-name">Name</label>
-                                                                        <input id="add-slave-server-name" class="form-control" type="input" name="add-slave-server-name" />
-                                                                </div>
-                                                                <div>
                                                                         <label for="add-slave-server-ip">IPV4</label>
                                                                         <input id="add-slave-server-ip" class="form-control" type="input" name="add-slave-server-ip" />
                                                                 </div>
@@ -59,15 +55,22 @@ require_once('include/menu.html');
                                 </div>
                                 <!--/ END Add Slave Server -->
                                 
-                                
-				<div class="row">
+                                <div id="progress-bar-container-install-server" class="progress progress-striped active" style="width: 500px; background-color: black; display: none;">
+                                    <div id="progress-bar-install-server-slave" class="progress-bar progress-bar-success">
+                                        <p id="state-install-server-slave"></p>
+                                    </div>
+                                </div>
+
+                                <button id="add-slave-server" class="btn btn-info ladda-button ladda-progress mb5" data-style="expand-right">
+                                    <span class="ladda-label">Add A Slave Server</span>
+                                    <span class="ladda-spinner"></span>
+                                    <span class="ladda-spinner"></span>
+                                    <div class="ladda-progress" style="width: 100px;"></div>
+                                </button>
+				<div id="list-planel" class="row">
 					<!-- START Left Side (Informations Servers) -->
-                                        <button id="add-slave-server" class="btn btn-info ladda-button ladda-progress mb5" data-style="expand-right">
-                                            <span class="ladda-label">Add A Slave Server</span>
-                                            <span class="ladda-spinner"></span>
-                                            <span class="ladda-spinner"></span>
-                                            <div class="ladda-progress" style="width: 100px;"></div>
-                                        </button>
+
+                                        
 					<?php
 						require_once('PHP/getHTMLCode.php');
 						echo getHTMLAllPanelServer();

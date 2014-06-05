@@ -9,6 +9,8 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/ErrorConstantes.php'
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHPseclib/Net/SSH2.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHPseclib/Crypt/RSA.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHPseclib/Net/SFTP.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/Object/Cache.class.php';
 
 header("Content-Type: text/plain");
 
@@ -23,7 +25,7 @@ function errorHandler($errno, $errstr, $errfile, $errline) {
     ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), $_SESSION['user']->getLogin(), "PHPseclib internal error", "errno=". $errno .", ". "errstr=". $errstr .", ". "errfile:". $errfile .", ". "errline:". $errline, REPORTING_TYPE_SLAVE_ERROR, date("Y-m-d H:i:s")));
     exit(ERROR_SSH_SYSTEM);
 }
-
+/*
 function installServer() {
 
     $ipServerSSH = (isset($_POST["ipServerSSH"])) ? $_POST["ipServerSSH"] : "";
@@ -93,8 +95,8 @@ function installServer() {
     ServerDAO::insertServer($ipServerSSH, $login, $password, $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/' . PATH_MASTER_PRIVATE_KEY_SSH . $ipServerSSH);
     ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), $_SESSION['user']->getLogin(), "Install Server Slave $ipServerSSH", "Success", REPORTING_TYPE_LOG, date("Y-m-d H:i:s")));
     echo true;
-}
-
+}*/
+/*
 function desinstallServer() {
     
     $ipServerSSH = (isset($_POST["ipServerSSH"])) ? $_POST["ipServerSSH"] : "";
@@ -133,10 +135,10 @@ function desinstallServer() {
     ServerDAO::deleteServer($ipServerSSH);
     ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), $_SESSION['user']->getLogin(), "Desinstall Server Slave $ipServerSSH", "Success", REPORTING_TYPE_LOG, date("Y-m-d H:i:s")));
     echo true;
-}
-
+}*/
+/*
 function installSoftware($ssh) {
-    $_SESSION[INSTALL_SERVER_STEP] = INSTALL_SERVER_STEP_INSTALLING_SOFTWARE;
+    $_SESSION[INSTALL_SERVER_STEP] = INSTALL_SERVER_STEP_INSTALLING_SOFTWARES;
     $ssh->write("su -c \""
                     ."apt-get install -y aptitude; "
                     ."aptitude install -y apache2; " //php5 mysql-server php5-mysql libapache2-mod-php5; " //MysqlPasswordPB pas sur que j'en ai besoins demandé à julien
@@ -152,8 +154,8 @@ function removeSoftware($ssh) {
                     ."aptitude remove -y apache2; "//php5 mysql-server php5-mysql libapache2-mod-php5; "
                     ."aptitude autoremove"
                 . "\"\n");
-}
-
+}*/
+/*
 function connectionServerWithKey() {
     
     $ipServerSSH = (isset($_POST["ipServerSSH"])) ? $_POST["ipServerSSH"] : "";
@@ -177,21 +179,198 @@ function connectionServerWithKey() {
     
     echo $ssh->exec('pwd');
     echo $ssh->exec('ls -la');
+}*/
+
+function generateKey($ipServerSSH) {
+    // replace by DSA when i will be in linux server
+    $rsa = new Crypt_RSA();
+    $rsa->setPublicKeyFormat(CRYPT_RSA_PUBLIC_FORMAT_OPENSSH);
+    extract($rsa->createKey());
+    
+    // save private key
+    if (!file_put_contents(PATH_ROOT_WEBSITE . PATH_MASTER_PRIVATE_KEY_SSH . $ipServerSSH, $privatekey)) {
+        //$_SESSION[INSTALL_SERVER_STEP] = INSTALL_SERVER_STEP_ERROR;
+        Cache::write(PATH_ROOT_WEBSITE . "/cache/install", INSTALL_SERVER_STEP_ERROR);
+        ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), $_SESSION['user']->getLogin(), "SSH Create File Private Key Error", ERROR_SSH_SAVE_KEY_FAILED, REPORTING_TYPE_SLAVE_ERROR, date("Y-m-d H:i:s")));
+        exit(ERROR_SSH_SAVE_KEY_FAILED);
+    }
+    
+    // save public key in the folder which be send in the server slave
+    if (!file_put_contents(PATH_ROOT_WEBSITE . PATH_MASTER_PUBLIC_KEY_SSH, $publickey)) {
+        //$_SESSION[INSTALL_SERVER_STEP] = INSTALL_SERVER_STEP_ERROR;
+        Cache::write(PATH_ROOT_WEBSITE . "/cache/install", INSTALL_SERVER_STEP_ERROR);
+        ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), $_SESSION['user']->getLogin(), "SSH Create File Public Key Error", ERROR_SSH_SAVE_KEY_FAILED, REPORTING_TYPE_SLAVE_ERROR, date("Y-m-d H:i:s")));
+        exit(ERROR_SSH_SAVE_KEY_FAILED);
+    }
 }
 
-
-function updateInfo() {
-    $id = mysql_real_escape_string(isset($_POST['id']) ? ($_POST['id']) : '');
-    $ipv4 = mysql_real_escape_string(isset($_POST['ipv4']) ? ($_POST['ipv4']) : '');
-    $name = mysql_real_escape_string(isset($_POST['name']) ? ($_POST['name']) : '');
-    $login = mysql_real_escape_string(isset($_POST['login']) ? ($_POST['login']) : '');
-    $password = mysql_real_escape_string(isset($_POST['password']) ? ($_POST['password']) : '');
-    if (Tools::IsAuth()) {
-        ServerDAO::updateServerBasicServer($id, $ipv4, $name, $login, $password);
-        return ;
+function cpAndPutConstantesInstallScript() {
+    $folder = opendir(PATH_ROOT_WEBSITE . PATH_MASTER_SCRIPT_SERVER_SLAVE . '/ScriptServer/');
+    while ($file = readdir($folder)) {
+        if ($file != "." && $file != "..")
+            if (!copy(PATH_ROOT_WEBSITE . PATH_MASTER_SCRIPT_SERVER_SLAVE . '/ScriptServer/' . $file, PATH_ROOT_WEBSITE . PATH_MASTER_SCRIPT_SERVER_SLAVE_TO_UPLOAD . '/' . $file)) {
+                //$_SESSION[INSTALL_SERVER_STEP] = INSTALL_SERVER_STEP_ERROR;
+                Cache::write(PATH_ROOT_WEBSITE . "/cache/install", INSTALL_SERVER_STEP_ERROR);
+                ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), $_SESSION['user']->getLogin(), "cpAndPutConstantesInstallSpript() Error", ERROR_COPY_FILE . " $file", REPORTING_TYPE_SLAVE_ERROR, date("Y-m-d H:i:s")));
+                exit(ERROR_COPY_FILE);
+            }
     }
-    http_response_code(401);
-    return false;
+    closedir($folder);
+    $str_old = file_get_contents(PATH_ROOT_WEBSITE . PATH_MASTER_SCRIPT_SERVER_SLAVE_TO_UPLOAD . '/installSoftware.sh');
+    for ($i = 0; $i != strlen($str_old); $i++) {
+        if (ord($str_old[$i]) == 13)
+            $str_old[$i] = " ";
+    }
+    file_put_contents(PATH_ROOT_WEBSITE . PATH_MASTER_SCRIPT_SERVER_SLAVE_TO_UPLOAD . '/installSoftware.sh', $str_old);
+    
+    $str_old = file_get_contents(PATH_ROOT_WEBSITE . PATH_MASTER_SCRIPT_SERVER_SLAVE_TO_UPLOAD . '/desinstallServerSlave.sh');
+    for ($i = 0; $i != strlen($str_old); $i++) {
+        if (ord($str_old[$i]) == 13)
+            $str_old[$i] = " ";
+    }
+    file_put_contents(PATH_ROOT_WEBSITE . PATH_MASTER_SCRIPT_SERVER_SLAVE_TO_UPLOAD . '/desinstallServerSlave.sh', $str_old);
+}
+
+function compressFolder() {
+    // replace by shell cmd when i will be in linux server
+    try {
+        $a = new PharData(PATH_ROOT_WEBSITE . PATH_MASTER_SCRIPT_SERVER_SLAVE_TO_UPLOAD_ARCHIVE);
+        $a->buildFromDirectory(PATH_ROOT_WEBSITE . PATH_MASTER_SCRIPT_SERVER_SLAVE_TO_UPLOAD);
+        $a->compress(Phar::GZ);
+    }
+    catch (Exception $e) {
+        //$_SESSION[INSTALL_SERVER_STEP] = INSTALL_SERVER_STEP_ERROR;
+        Cache::write(PATH_ROOT_WEBSITE . "/cache/install", INSTALL_SERVER_STEP_ERROR);
+        cleanInstallFolder();
+        ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), $_SESSION['user']->getLogin(), "compressFolder() Error", $e, REPORTING_TYPE_SLAVE_ERROR, date("Y-m-d H:i:s")));
+        exit(ERROR_COMPRESS_FILE);
+    }
+}
+
+function uploadInstallScripts($ipServerSSH, $login, $password) {
+    $sftp = new Net_SFTP($ipServerSSH);
+    if (!$sftp->login($login, $password)) {
+        //$_SESSION[INSTALL_SERVER_STEP] = INSTALL_SERVER_STEP_ERROR;
+        Cache::write(PATH_ROOT_WEBSITE . "/cache/install", INSTALL_SERVER_STEP_ERROR);
+        cleanInstallFolder();
+        ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), $_SESSION['user']->getLogin(), "uploadInstallScripts() Error", ERROR_UPLOAD_SCRIPTS, REPORTING_TYPE_SLAVE_ERROR, date("Y-m-d H:i:s")));
+        exit(ERROR_SSH_CONNECTION_INVALID_AUTH);
+    }
+    $sftp->put('ScriptServer.tar', PATH_ROOT_WEBSITE . PATH_MASTER_SCRIPT_SERVER_SLAVE_TO_UPLOAD_ARCHIVE, NET_SFTP_LOCAL_FILE);
+}
+
+function cleanInstallFolder() {
+    $folder = opendir(PATH_ROOT_WEBSITE . PATH_MASTER_SCRIPT_SERVER_SLAVE_TO_UPLOAD);
+    while ($file = readdir($folder)) {
+        if ($file != "." && $file != "..")
+            unlink(PATH_ROOT_WEBSITE . PATH_MASTER_SCRIPT_SERVER_SLAVE_TO_UPLOAD . '/' . $file);
+    }
+    closedir($folder);
+}
+
+function installServerSlave() {
+    $ipServerSSH = (isset($_POST["ipServerSSH"])) ? $_POST["ipServerSSH"] : "";
+    $login = (isset($_POST["login"])) ? $_POST["login"] : "";
+    $password = (isset($_POST["password"])) ? $_POST["password"] : "";
+    Cache::write(PATH_ROOT_WEBSITE . "/cache/install", INSTALL_SERVER_STEP_INIT);
+    if (empty($ipServerSSH) || empty($login) || empty($password)) {
+        //$_SESSION[INSTALL_SERVER_STEP] = INSTALL_SERVER_STEP_ERROR;
+        Cache::write(PATH_ROOT_WEBSITE . "/cache/install", INSTALL_SERVER_STEP_ERROR);
+        exit(ERROR_SSH_CONNECTION_SERVER_REQUIREMENT);
+    }
+
+    if (ServerDAO::isServerExist($ipServerSSH)) {
+        //$_SESSION[INSTALL_SERVER_STEP] = INSTALL_SERVER_STEP_ERROR;
+        Cache::write(PATH_ROOT_WEBSITE . "/cache/install", INSTALL_SERVER_STEP_ERROR);
+        exit(ERROR_SSH_SERVER_ALREADY_CONFIGURATED);
+    }
+    set_time_limit(180);
+    
+    if (!file_exists(PATH_ROOT_WEBSITE . PATH_MASTER_SCRIPT_SERVER_SLAVE_TO_UPLOAD))
+        mkdir(PATH_ROOT_WEBSITE . PATH_MASTER_SCRIPT_SERVER_SLAVE_TO_UPLOAD);
+    //$_SESSION[INSTALL_SERVER_STEP] = INSTALL_SERVER_STEP_INIT;
+    Cache::write(PATH_ROOT_WEBSITE . "/cache/install", INSTALL_SERVER_STEP_GENERATE_KEY);
+    generateKey($ipServerSSH);
+    //$_SESSION[INSTALL_SERVER_STEP] = INSTALL_SERVER_STEP_COMPRESSING_SCRIPTS;
+    Cache::write(PATH_ROOT_WEBSITE . "/cache/install", INSTALL_SERVER_STEP_COMPRESSING_SCRIPTS);
+    cpAndPutConstantesInstallScript(); // put Constantes in Constantes.php
+    compressFolder();
+    //$_SESSION[INSTALL_SERVER_STEP] = INSTALL_SERVER_STEP_UPLOADING_SCRIPTS;
+    Cache::write(PATH_ROOT_WEBSITE . "/cache/install", INSTALL_SERVER_STEP_UPLOADING_SCRIPTS);
+    uploadInstallScripts($ipServerSSH, $login, $password);
+    cleanInstallFolder();
+    $ssh = new Net_SSH2($ipServerSSH);
+    if (!$ssh->login($login, $password)) {
+        //$_SESSION[INSTALL_SERVER_STEP] = INSTALL_SERVER_STEP_ERROR;
+        Cache::write(PATH_ROOT_WEBSITE . "/cache/install", INSTALL_SERVER_STEP_ERROR);
+        exit(ERROR_SSH_CONNECTION_INVALID_AUTH);
+    }
+    $ssh->exec("mkdir ScriptServer");
+    $ssh->exec("tar -xf ScriptServer.tar -C ScriptServer/");
+    $ssh->exec("rm -f ScriptServer.tar");
+    $ssh->exec("chmod +x ScriptServer/installSoftware.sh");
+    $ssh->exec("chmod +x ScriptServer/desinstallServerSlave.sh");
+    
+    // $_SESSION[INSTALL_SERVER_STEP]
+    // remove asking password for su
+    //$_SESSION[INSTALL_SERVER_STEP] = INSTALL_SERVER_STEP_INSTALLING_SOFTWARES;
+    Cache::write(PATH_ROOT_WEBSITE . "/cache/install", INSTALL_SERVER_STEP_INSTALLING_SOFTWARES);
+    $ssh->exec("./ScriptServer/installSoftware.sh"); // install apache2 & php5 & php5-mysql & libapache2-mod-php5 & virtualBox
+    //$_SESSION[INSTALL_SERVER_STEP] = INSTALL_SERVER_STEP_SECURING_SSH;
+    Cache::write(PATH_ROOT_WEBSITE . "/cache/install", INSTALL_SERVER_STEP_SECURING_SSH);
+    $ssh->read('/.*@.*[$|#]/', NET_SSH2_READ_REGEX);
+    $ssh->write("php ./ScriptServer/securiseSSHServerSlave.php\n");
+    $ret = $ssh->read('/.*@.*[$|#]/', NET_SSH2_READ_REGEX);
+    //echo $ret . "\n";
+    /*if (strlen($ret) < 1 || intval($ret[0]) != 1) {
+        $_SESSION[INSTALL_SERVER_STEP] = INSTALL_SERVER_STEP_ERROR;
+        ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), $_SESSION['user']->getLogin(), "installServerSlave() Error", ERROR_SSH_SECURISE . " ret:" . intval($ret[0]), REPORTING_TYPE_SLAVE_ERROR, date("Y-m-d H:i:s")));
+        exit(ERROR_SSH_SECURISE);
+    }*/
+    //$_SESSION[INSTALL_SERVER_STEP] = INSTALL_SERVER_STEP_GETTING_SERVER_INFOS;
+    Cache::write(PATH_ROOT_WEBSITE . "/cache/install", INSTALL_SERVER_STEP_GETTING_SERVER_INFOS);
+    ServerDAO::insertServer($ipServerSSH, $login, $password, $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/' . PATH_MASTER_PRIVATE_KEY_SSH . $ipServerSSH);
+    $ssh->write("php ./ScriptServer/infoServerSlave.php\n");
+    $ret = $ssh->read('/.*@.*[$|#]/', NET_SSH2_READ_REGEX);
+    //echo $ret . "\n"; // check ret
+    //$_SESSION[INSTALL_SERVER_STEP] = INSTALL_SERVER_STEP_DONE;
+    Cache::write(PATH_ROOT_WEBSITE . "/cache/install", INSTALL_SERVER_STEP_DONE);
+    ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), $_SESSION['user']->getLogin(), "Install Server Slave $ipServerSSH", "Success", REPORTING_TYPE_LOG, date("Y-m-d H:i:s")));
+    echo true;
+}
+
+function desinstallServerSlave() {
+    $ipServerSSH = (isset($_POST["ipServerSSH"])) ? $_POST["ipServerSSH"] : "";
+    $login = (isset($_POST["login"])) ? $_POST["login"] : "";
+    $keySSHPath = (isset($_POST["keySSHPath"])) ? $_POST["keySSHPath"] : "";
+
+    if (empty($ipServerSSH) || empty($login) || empty($keySSHPath)) {
+        $_SESSION[DESINSTALL_SERVER_STEP] = DESINSTALL_SERVER_STEP_ERROR;
+        exit(ERROR_SSH_CONNECTION_SERVER_REQUIREMENT);
+    }
+    
+    if (!ServerDAO::isServerExist($ipServerSSH)) {
+        $_SESSION[DESINSTALL_SERVER_STEP] = INSTALL_SERVER_STEP_ERROR;
+        ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), $_SESSION['user']->getLogin(), "Desinstall Server Slave $ipServerSSH", "This server hasn't been configurated before.", REPORTING_TYPE_SECURITY, date("Y-m-d H:i:s")));
+        exit(ERROR_SSH_SERVER_NOT_CONFIGURATED);
+    }
+    
+    $_SESSION[DESINSTALL_SERVER_STEP] = DESINSTALL_SERVER_STEP_INIT;
+    $ssh = new Net_SSH2($ipServerSSH, SSH_PORT);
+    $key = new Crypt_RSA();
+    $key->loadKey(file_get_contents($keySSHPath));
+    if (!$ssh->login($login, $key)) {
+        $_SESSION[DESINSTALL_SERVER_STEP] = DESINSTALL_SERVER_STEP_ERROR;
+        exit(ERROR_SSH_CONNECTION_INVALID_AUTH);
+    }
+    $_SESSION[DESINSTALL_SERVER_STEP] = DESINSTALL_SERVER_STEP_DESECURING_SSH;
+    $ssh->read('/.*@.*[$|#]/', NET_SSH2_READ_REGEX);
+    $ssh->write("./ScriptServer/desinstallServerSlave.sh\n");
+    $ssh->read('/.*@.*[$|#]/', NET_SSH2_READ_REGEX);
+    $_SESSION[DESINSTALL_SERVER_STEP] = DESINSTALL_SERVER_STEP_DONE;
+    ServerDAO::deleteServer($ipServerSSH);
+    ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), $_SESSION['user']->getLogin(), "Desinstall Server Slave $ipServerSSH", "Success", REPORTING_TYPE_LOG, date("Y-m-d H:i:s")));
+    echo true;
 }
 
 if (isset($_POST["nameRequest"])) {
@@ -199,9 +378,10 @@ if (isset($_POST["nameRequest"])) {
         ReportDAO::insertReport(new Report(0, 0, "", "Security Warning", "call to ". $_POST["nameRequest"] ."() without be auth", REPORTING_TYPE_SECURITY, date("Y-m-d H:i:s")));
         exit(ERROR_REQUIRE_AUTH);
     }
-    if ($_POST["nameRequest"] == "updateInfo")
-        updateInfo();
-    else if ($_POST["nameRequest"] == "installServer")
-	installServer();
+    Cache::clean(PATH_ROOT_WEBSITE . "/cache/install");
+    if ($_POST["nameRequest"] == "installServer")
+	installServerSlave();
+    else if ($_POST["nameRequest"] == "desinstallServer")
+	desinstallServerSlave();
 }
 ?>
