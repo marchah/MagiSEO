@@ -7,7 +7,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/getHTMLCode.php';
 
 if (isset($_POST["nameRequest"])) {
 	if ($_POST["nameRequest"] == "getHTMLUSerButtonAuth")
-		echo getHTMLUSerButtonAuth();
+            echo getHTMLUSerButtonAuth();
         else if ($_POST["nameRequest"] == "getHTMLPanelNewServer")
             echo getHTMLPanelNewServer();
 }

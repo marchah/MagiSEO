@@ -1,6 +1,6 @@
 <?php
 require_once '../site/PHP/DAO/ServerDAO.class.php';
 
-$listServer = ServerDAO::getListSlaveServer();
+$listServer = ServerDAO::getNewSlaveServer();
 
 var_dump($listServer);

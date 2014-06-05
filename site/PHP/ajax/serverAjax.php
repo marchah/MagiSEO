@@ -23,6 +23,7 @@ set_error_handler('errorHandler', E_USER_NOTICE);
 
 function errorHandler($errno, $errstr, $errfile, $errline) {
     ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), $_SESSION['user']->getLogin(), "PHPseclib internal error", "errno=". $errno .", ". "errstr=". $errstr .", ". "errfile:". $errfile .", ". "errline:". $errline, REPORTING_TYPE_SLAVE_ERROR, date("Y-m-d H:i:s")));
+    cleanInstallFolder();
     exit(ERROR_SSH_SYSTEM);
 }
 /*
@@ -204,7 +205,7 @@ function generateKey($ipServerSSH) {
     }
 }
 
-function cpAndPutConstantesInstallScript() {
+function cpAndPutConstantesInstallScript($ipServerSSH, $login) {
     $folder = opendir(PATH_ROOT_WEBSITE . PATH_MASTER_SCRIPT_SERVER_SLAVE . '/ScriptServer/');
     while ($file = readdir($folder)) {
         if ($file != "." && $file != "..")
@@ -216,6 +217,13 @@ function cpAndPutConstantesInstallScript() {
             }
     }
     closedir($folder);
+    // Put Constantes in Constantes.php
+    $constantesFile = file_get_contents(PATH_ROOT_WEBSITE . PATH_MASTER_SCRIPT_SERVER_SLAVE_TO_UPLOAD . '/Constantes.php');
+    $constantesFile = str_replace("$#IP_ADDRESS#$", $ipServerSSH, $constantesFile);
+    $constantesFile = str_replace("$#LOGIN#$", $login, $constantesFile);
+    file_put_contents(PATH_ROOT_WEBSITE . PATH_MASTER_SCRIPT_SERVER_SLAVE_TO_UPLOAD . '/Constantes.php', $constantesFile);
+    
+    // Becasue I'm developing with Windows
     $str_old = file_get_contents(PATH_ROOT_WEBSITE . PATH_MASTER_SCRIPT_SERVER_SLAVE_TO_UPLOAD . '/installSoftware.sh');
     for ($i = 0; $i != strlen($str_old); $i++) {
         if (ord($str_old[$i]) == 13)
@@ -293,7 +301,7 @@ function installServerSlave() {
     generateKey($ipServerSSH);
     //$_SESSION[INSTALL_SERVER_STEP] = INSTALL_SERVER_STEP_COMPRESSING_SCRIPTS;
     Cache::write(PATH_ROOT_WEBSITE . "/cache/install", INSTALL_SERVER_STEP_COMPRESSING_SCRIPTS);
-    cpAndPutConstantesInstallScript(); // put Constantes in Constantes.php
+    cpAndPutConstantesInstallScript($ipServerSSH, $login); // put Constantes in Constantes.php
     compressFolder();
     //$_SESSION[INSTALL_SERVER_STEP] = INSTALL_SERVER_STEP_UPLOADING_SCRIPTS;
     Cache::write(PATH_ROOT_WEBSITE . "/cache/install", INSTALL_SERVER_STEP_UPLOADING_SCRIPTS);
@@ -315,7 +323,8 @@ function installServerSlave() {
     // remove asking password for su
     //$_SESSION[INSTALL_SERVER_STEP] = INSTALL_SERVER_STEP_INSTALLING_SOFTWARES;
     Cache::write(PATH_ROOT_WEBSITE . "/cache/install", INSTALL_SERVER_STEP_INSTALLING_SOFTWARES);
-    $ssh->exec("./ScriptServer/installSoftware.sh"); // install apache2 & php5 & php5-mysql & libapache2-mod-php5 & virtualBox
+    //echo $ssh->read('/.*@.*[$|#]/', NET_SSH2_READ_REGEX);
+    $ssh->write("./ScriptServer/installSoftware.sh\n"); // install apache2 & php5 & php5-mysql & libapache2-mod-php5 & virtualBox
     //$_SESSION[INSTALL_SERVER_STEP] = INSTALL_SERVER_STEP_SECURING_SSH;
     Cache::write(PATH_ROOT_WEBSITE . "/cache/install", INSTALL_SERVER_STEP_SECURING_SSH);
     $ssh->read('/.*@.*[$|#]/', NET_SSH2_READ_REGEX);

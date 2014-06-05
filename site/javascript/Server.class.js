@@ -26,7 +26,7 @@ Server.addSlaveServer = function (ipv4, login, password) {
        error: function (xhr) { console.log('error:', xhr.responseText);},
        success: function (str) {
             if (str == true) 
-                Server.displayNewPanelServer();
+                setTimeout(Server.displayNewPanelServer, 5000); // très moche PK????
             else
                 alert(str);
         },
@@ -97,6 +97,9 @@ var attachEventOnUpdateServerButton = function() {
 
 
 $('#add-slave-server').click(function() {
+    $("#state-install-server-slave").text("");
+    $("#progress-bar-install-server-slave").css("width", "0px");
+    $("#progress-bar-container-install-server").css("display", "none");
     $("#add-slave-server-failed").text('');
     $("#add-slave-server-failed").css('display', 'none');
     $('#AddSlaveServerModal').modal();
@@ -133,6 +136,10 @@ $('#add-slave-server-button').click(function(){
         return ;
     }
     Server.addSlaveServer($("#add-slave-server-ip").val(), $("#add-slave-server-login").val(), $("#add-slave-server-password").val());
+    $("#add-slave-server-ip").val('');
+    $("#add-slave-server-login").val('');
+    $("#add-slave-server-password").val('');
+    $("#add-slave-server-password-confirmation").val('');
     $('#AddSlaveServerModal').modal('hide');
 });
 

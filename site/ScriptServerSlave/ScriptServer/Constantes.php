@@ -8,9 +8,9 @@ define('BDD_PASSWORD', 'totoauzoo');
 define('REPORTING_TYPE_SECURITY', 4);
 define('REPORTING_TYPE_INTERNAL_ERROR', 5);
 
-define('MY_ADDRESS_IP', '192.168.234.148'); //Voir si je ne peut pas le faire avec une fonction PHP
+define('MY_ADDRESS_IP', '$#IP_ADDRESS#$'); //Voir si je ne peut pas le faire avec une fonction PHP
 
-define('LOGIN', 'marcha');
+define('LOGIN', '$#LOGIN#$');
 define('PUBLIC_KEY', 'ScriptServer/authorized_keys');
 
 function ConnectionBDD() {
