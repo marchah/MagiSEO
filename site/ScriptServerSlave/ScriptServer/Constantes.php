@@ -12,6 +12,7 @@ define('MY_ADDRESS_IP', '$#IP_ADDRESS#$'); //Voir si je ne peut pas le faire ave
 
 define('LOGIN', '$#LOGIN#$');
 define('PUBLIC_KEY', 'ScriptServer/authorized_keys');
+define('MSG_DELIMITER', '#/$/#:');
 
 function ConnectionBDD() {
     try

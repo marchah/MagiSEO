@@ -20,8 +20,27 @@ class ServerDAO extends DAO {
                             ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), "", "REQUEST SQL FAILED", "ServerDAO::insertServer()", REPORTING_TYPE_INTERNAL_ERROR, date("Y-m-d H:i:s")));
                             return false;
                     }
-            return true;
+            return $bdd->lastInsertId();
 	}
+
+        static function insertServerInfo($idServer, $sizeDiskCurrentMB, $sizeDiskTotalMB, $sizeRAMCurrentKB, $sizeRAMTotalKB, $nbCPUUsed, $nbCPUTotal) {
+            $bdd = parent::ConnectionBDD();
+            
+            $req = $bdd->prepare('INSERT INTO server_information (idserver, disk_max_size, disk_current_size, nb_max_proc, nb_current_proc, flash_max_size, flash_current_size) VALUES(:idserver, :disk_max_size, :disk_current_size, :nb_max_proc, :nb_current_proc, :flash_max_size, :flash_current_size)');
+            if (!$req->execute(array(
+                            'idserver' => $idServer,
+                            'disk_max_size' => $sizeDiskTotalMB,
+                            'disk_current_size' => $sizeDiskCurrentMB,
+                            'nb_max_proc' => $nbCPUTotal,
+                            'nb_current_proc' => $nbCPUUsed,
+                            'flash_max_size' => $sizeRAMTotalKB,
+                            'flash_current_size' => $sizeRAMCurrentKB
+                    ))) {
+                            ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), "", "REQUEST SQL FAILED", "ServerDAO::insertServer()", REPORTING_TYPE_INTERNAL_ERROR, date("Y-m-d H:i:s")));
+                            return false;
+                    }
+            return $bdd->lastInsertId();
+        }
         
         static function deleteServer($IPV4) { // manque beaucoup d'info a delete et plutot prendre Server
             $bdd = parent::ConnectionBDD();
@@ -74,7 +93,7 @@ class ServerDAO extends DAO {
             return $listServer;
         }
         
-        static function getNewSlaveServer() {
+        /*static function getNewSlaveServer() {
             $bdd = parent::ConnectionBDD();
             
             $reponse = $bdd->query('SELECT sslave.*, sinfo.disk_max_size, sinfo.disk_current_size, 
@@ -83,11 +102,11 @@ class ServerDAO extends DAO {
                                                             INNER JOIN server_information sinfo ON sslave.id = sinfo.idserver ORDER BY sslave.id DESC LIMIT 1');
             $server;
             if ($data = $reponse->fetch()) {
-                    $server = new Server($data);	
+                $server = new Server($data);	
             }
             $reponse->closeCursor();
             return $server;
-        }
+        }*/
         
         static function isServerExist($IPV4) {
             $bdd = parent::ConnectionBDD();

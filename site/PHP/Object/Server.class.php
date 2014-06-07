@@ -15,6 +15,7 @@ class Server {
   private $_flashMaxCurrent;
   private $_username;
   private $_password;
+  private $_keySSHPath;
 
     function __toString()
     {
@@ -31,22 +32,23 @@ class Server {
 	$this->_diskCurrentSize = $data['disk_current_size'];
 	$this->_nbMaxProc = $data['nb_max_proc'];
 	$this->_nbCurrentProc = $data['nb_current_proc'];
-	$this->_flashMaxSize = $data['flash_max_size'];
-	$this->_flashCurrentSize = $data['flash_current_size'];
+	$this->_flashMax = $data['flash_max_size'];
+	$this->_flashMaxCurrent = $data['flash_current_size'];
 	$this->_username = $data['username'];
 	$this->_password = $data['password'];
+        $this->_keySSHPath = $data['keysshpath'];
   }
 
     public function setIPV4($IPV4){$this->_IPV4 = $IPV4;}
     public function getIPV4(){return $this->_IPV4;}
     public function setDiskCurrentSize($diskCurrentSize) {$this->_diskCurrentSize = $diskCurrentSize;}
     public function getDiskCurrentSize() {return $this->_diskCurrentSize;}
-    public function setFlashMaxSize($flashMaxSize) {$this->_flashMaxSize = $flashMaxSize;}
-    public function getFlashMaxSize() {return $this->_flashMaxSize;}
+    public function setFlashMaxSize($flashMaxSize) {$this->_flashMax = $flashMaxSize;}
+    public function getFlashMaxSize() {return $this->_flashMax;}
     public function setDiskMaxSize($diskMaxSize) {$this->_diskMaxSize = $diskMaxSize;}
     public function getDiskMaxSize() {return $this->_diskMaxSize;}
-    public function setFlashCurrentSize($flashCurrentSize) {$this->_flashCurrentSize = $flashCurrentSize;}
-    public function getFlashCurrentSize() {return $this->_flashCurrentSize;}
+    public function setFlashCurrentSize($flashCurrentSize) {$this->_flashMaxCurrent = $flashCurrentSize;}
+    public function getFlashCurrentSize() {return $this->_flashMaxCurrent;}
     /*public function setIsOn($isOn) {$this->_isOn = $isOn;}
     public function getIsOn() {return $this->_isOn;}*/
     public function setId($id) {$this->_id = $id;}
@@ -63,6 +65,8 @@ class Server {
     public function getUsername() {return $this->_username;}
     public function setPassword($password) {$this->_password = $password;}
     public function getPassword() {return $this->_password;}
+    public function getKeySSHPath() {return $this->_keySSHPath;}
+    public function setKeySSHPath($keySSHPath) {$this->_keySSHPath = $keySSHPath;}
 }
 
 ?>

@@ -36,4 +36,6 @@ define('MAX_AUTH_TRIES', "1");
 define('MAX_STARTUPS', "2");
 define('GROUP_SSH_ALLOW', "sshusers");
 
+define('MSG_DELIMITER', '#/$/#:');
+
 ?>

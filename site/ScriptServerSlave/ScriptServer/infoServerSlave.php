@@ -26,12 +26,15 @@ class ServerInfo {
         $this->_sizeDiskTotalMB = ($sizeDiskTotalByte === false) ? 0 : intval($sizeDiskTotalByte / pow(1024,2));
     }
     
-    private function setSizeRAMKB() {
+    private function setSizeRAMKB() {      
         $sizeRAMFreeKB = exec("cat /proc/meminfo | grep MemFree");
         $sizeRAMTotalKB = exec("cat /proc/meminfo | grep MemTotal");
 
-        $this->_sizeRAMCurrentKB = (empty($sizeRAMFreeKB) || empty($sizeRAMTotalKB)) ? 0 : $sizeRAMTotalKB - $sizeRAMFreeKB;
-        $this->_sizeRAMTotalKB = empty($sizeRAMTotalKB) ? 0 : $sizeRAMTotalKB;
+        preg_match_all('#[0-9]+#', $sizeRAMTotalKB, $RAMTotal);
+        preg_match_all('#[0-9]+#', $sizeRAMFreeKB, $RAMFree);
+
+        $this->_sizeRAMTotalKB = empty($sizeRAMTotalKB) ? 0 : intval($RAMTotal[0][0]);
+        $this->_sizeRAMCurrentKB = (empty($sizeRAMFreeKB) || empty($sizeRAMTotalKB)) ? 0 : $this->_sizeRAMTotalKB - intval($RAMFree[0][0]);
     }
     
     private function setNbCPUTotal() {
@@ -71,7 +74,11 @@ class ServerInfo {
         $this->setNbCPUUsed();
     }
     
-    private function insertInfo($bdd, $idServer) {
+    public function getInfo() {
+        return MSG_DELIMITER . "$this->_sizeDiskCurrentMB/$this->_sizeDiskTotalMB/$this->_sizeRAMCurrentKB/$this->_sizeRAMTotalKB/$this->_nbCPUUsed/$this->_nbCPUTotal" . MSG_DELIMITER;
+    }
+    
+    /*private function insertInfo($bdd, $idServer) {
         $req = $bdd->prepare('INSERT INTO server_information (idserver, disk_max_size, disk_current_size, nb_max_proc, nb_current_proc, flash_max_size, flash_current_size) VALUES(:idserver, :disk_max_size, :disk_current_size, :nb_max_proc, :nb_current_proc, :flash_max_size, :flash_current_size)');
         if (!$req->execute(array(
                         'idserver' => $idServer,
@@ -134,7 +141,7 @@ class ServerInfo {
         }
         $reponse->closeCursor();
         return $ret;
-    }
+    }*/
     
     public function __toString() {
         return "ServerInfo {sizeDiskCurrentMB=$this->_sizeDiskCurrentMB, sizeDiskTotalMB=$this->_sizeDiskTotalMB, sizeRAMCurrentKB=$this->_sizeRAMCurrentKB, sizeRAMTotalKB=$this->_sizeRAMTotalKB, nbCPUTotal=$this->_nbCPUTotal, nbCPUUsed=$this->_nbCPUUsed}";
@@ -143,7 +150,8 @@ class ServerInfo {
 
 $tmp = new ServerInfo();
 $tmp->setInfo();
-if ($tmp->save())
+echo $tmp->getInfo() . "\n";
+/*if ($tmp->save())
     echo "1";
 else
-    echo "0";
+    echo "0";*/
