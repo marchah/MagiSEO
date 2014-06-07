@@ -6,7 +6,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/Object/Cache.class.p
 
 header("Content-Type: text/plain");
 
-function getStateInstall() {
+function getStateInstallServer() {
     $step = Cache::read(PATH_ROOT_WEBSITE . "/cache/install");
     $msg = "";
     switch ($step)
@@ -43,8 +43,35 @@ function getStateInstall() {
     echo $step . "/" . $msg . "/" . INSTALL_SERVER_STEP_DONE;
 }
 
+function getStateDesinstallServer() {
+    $step = Cache::read(PATH_ROOT_WEBSITE . "/cache/desinstall");
+    $msg = "";
+    switch ($step)
+    {
+        case DESINSTALL_SERVER_STEP_ERROR:
+            $msg = "Error";
+            break;
+        case DESINSTALL_SERVER_STEP_INIT :
+            $msg = "Initialisation";
+            break;
+        case DESINSTALL_SERVER_STEP_DESECURING_SSH :
+            $msg = "Desecurise SSH";
+            break;
+        case DESINSTALL_SERVER_STEP_DESINSTALLING_SOFTWARE :
+            $msg = "Desinstalling software";
+            break;
+        case DESINSTALL_SERVER_STEP_DONE :
+            $msg = "Desinstall Done";
+            break;
+    }
+    
+    echo $step . "/" . $msg . "/" . DESINSTALL_SERVER_STEP_DONE;
+}
+
 if (isset($_POST["nameRequest"])) {
-    if ($_POST["nameRequest"] == "getStateInstall")
-	getStateInstall();
+    if ($_POST["nameRequest"] == "getStateInstallServer")
+	getStateInstallServer();
+    else if ($_POST["nameRequest"] == "getStateDesinstallServer")
+	getStateDesinstallServer();
 }
 

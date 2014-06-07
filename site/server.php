@@ -55,9 +55,9 @@ require_once('include/menu.html');
                                 </div>
                                 <!--/ END Add Slave Server -->
                                 
-                                <div id="progress-bar-container-install-server" class="progress progress-striped active" style="width: 500px; background-color: black; display: none;">
-                                    <div id="progress-bar-install-server-slave" class="progress-bar progress-bar-success">
-                                        <p id="state-install-server-slave"></p>
+                                <div id="progress-bar-container-server" class="progress progress-striped active" style="width: 500px; background-color: black; display: none;">
+                                    <div id="progress-bar-server-slave" class="progress-bar progress-bar-success">
+                                        <p id="state-server-slave"></p>
                                     </div>
                                 </div>
 

@@ -93,7 +93,7 @@ class ServerDAO extends DAO {
             return $listServer;
         }
         
-        /*static function getNewSlaveServer() {
+        static function getNewSlaveServer() {
             $bdd = parent::ConnectionBDD();
             
             $reponse = $bdd->query('SELECT sslave.*, sinfo.disk_max_size, sinfo.disk_current_size, 
@@ -106,7 +106,7 @@ class ServerDAO extends DAO {
             }
             $reponse->closeCursor();
             return $server;
-        }*/
+        }
         
         static function isServerExist($IPV4) {
             $bdd = parent::ConnectionBDD();

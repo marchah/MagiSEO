@@ -13,6 +13,12 @@ Server.displayNewPanelServer = function () {
     });
 }
 
+Server.hideProgressBar = function () {
+    $("#state-server-slave").text("");
+    $("#progress-bar-server-slave").css("width", "0px");
+    $("#progress-bar-container-server").css("display", "none");
+}
+
 Server.addSlaveServer = function (ipv4, login, password) {
     var x = setInterval(Server.progressInstall, 2000);
     $.ajax({
@@ -33,16 +39,17 @@ Server.addSlaveServer = function (ipv4, login, password) {
         complete : function() {
             clearInterval(x);
             Server.progressInstall();
+            setTimeout(Server.hideProgressBar, 6000);
         }
     });
 }
 
 Server.progressInstall = function () {
-    $("#progress-bar-container-install-server").css("display", "block");
+    $("#progress-bar-container-server").css("display", "block");
     $.ajax({
        type: "POST",
        url: urlServer + ajaxFolderPath + "progressAjax.php",
-       data:{nameRequest: "getStateInstall"},
+       data:{nameRequest: "getStateInstallServer"},
        dataType: document.json,
        error: function (xhr) { console.log('error:', xhr.responseText);},
        success: function (step) {
@@ -53,11 +60,58 @@ Server.progressInstall = function () {
                 var max = parseInt(result[2]) + 1;
                 
                 if (current >= 0) { 
-                    var maxSize = parseInt($("#progress-bar-container-install-server").css("width"));
-                    $("#progress-bar-install-server-slave").css("width", maxSize / max * current + "px");
+                    var maxSize = parseInt($("#progress-bar-container-server").css("width"));
+                    $("#progress-bar-server-slave").css("width", maxSize / max * current + "px");
                 }
-                $("#state-install-server-slave").text(msg);
+                $("#state-server-slave").text(msg);
             }
+    });
+}
+
+Server.progressDesinstall = function () {
+    $("#progress-bar-container-server").css("display", "block");
+    $.ajax({
+       type: "POST",
+       url: urlServer + ajaxFolderPath + "progressAjax.php",
+       data:{nameRequest: "getStateDesnstallServer"},
+       dataType: document.json,
+       error: function (xhr) { console.log('error:', xhr.responseText);},
+       success: function (step) {
+                var result = step.split('/');
+                
+                var current = parseInt(result[0]) + 1;
+                var msg = result[1];
+                var max = parseInt(result[2]) + 1;
+                
+                if (current >= 0) { 
+                    var maxSize = parseInt($("#progress-bar-container-server").css("width"));
+                    $("#progress-bar-server-slave").css("width", maxSize / max * current + "px");
+                }
+                $("#state-server-slave").text(msg);
+            }
+    });
+}
+
+Server.deleteSlaveServer = function (ipServerSSH, login, keySSHPath) {
+    if ($("#progress-bar-container-server").css("display") != "none") {
+        alert("... Please Wait The End Of The Current Process ...");
+        return ;
+    }
+    var x = setInterval(Server.progressDesinstall, 2000);
+    $.ajax({
+       type: "POST",
+       url: urlServer + ajaxFolderPath + "serverAjax.php",
+       data:{nameRequest: "desinstallServer", ipServerSSH: ipServerSSH, login: login, keySSHPath: keySSHPath},
+       dataType: document.json,
+       error: function (xhr) { console.log('error:', xhr.responseText);},
+       success: function (str) {
+                alert(str);
+        },
+        complete : function() {
+            clearInterval(x);
+            Server.progressDesinstall();
+            setTimeout(Server.hideProgressBar, 6000);
+        }
     });
 }
 
@@ -97,9 +151,10 @@ var attachEventOnUpdateServerButton = function() {
 
 
 $('#add-slave-server').click(function() {
-    $("#state-install-server-slave").text("");
-    $("#progress-bar-install-server-slave").css("width", "0px");
-    $("#progress-bar-container-install-server").css("display", "none");
+    if ($("#progress-bar-container-server").css("display") != "none") {
+        alert("... Please Wait The End Of The Current Process ...");
+        return ;
+    }
     $("#add-slave-server-failed").text('');
     $("#add-slave-server-failed").css('display', 'none');
     $('#AddSlaveServerModal').modal();

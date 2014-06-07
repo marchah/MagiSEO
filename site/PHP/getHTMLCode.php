@@ -63,7 +63,7 @@ function getHTMLAllPanelServer() {
                                                                         </li>
                                                                         <li class="divider"></li>
                                                                         <li>
-                                                                            <a class="text-danger" href="javascript:void(0);">
+                                                                            <a class="text-danger" href="javascript:Server.deleteSlaveServer(\''. $server->getIPV4() .'\', \''. $server->getUsername() .'\', \''. $server->getKeySSHPath() .'\');">
                                                                                 Delete
                                                                             </a>
                                                                         </li>
@@ -72,9 +72,8 @@ function getHTMLAllPanelServer() {
 							')
 							: 
 							(''))
-							.'
-                                                    
-                                            <!-- panel toolbar button -->
+						.'
+                                            <!--/ panel toolbar button -->
 					</div>
 					<!--/ panel toolbar -->
 				</div>
@@ -84,7 +83,6 @@ function getHTMLAllPanelServer() {
 				<div style="" class="panel-collapse in pull out">
 					<div class="panel-body">
 						<div class="form-horizontal form-bordered">
-							<span class="hidden id-server-slave">'. $server->getID() .'</span>
 							<div class="form-group">
 								<label class="col-sm-3 control-label">IPV4</label>
 								<div class="col-sm-9">
@@ -159,6 +157,34 @@ function getHTMLPanelNewServer() {
 							<button class="btn up" data-toggle="panelcollapse"><i class="arrow"></i></button>
 						</div>
 						<!--/ option -->
+                                                <!-- panel toolbar button -->
+                                                '.
+                                                    ((isset($_SESSION['auth']) && $_SESSION['auth'] == true) ? 
+                                                    ('
+                                                            <div class="btn-group">
+                                                                <button class="btn btn-sm btn-danger dropdown-toggle" data-toggle="dropdown" type="button">
+                                                                    Action
+                                                                    <span class="caret"></span>
+                                                                </button>
+                                                                <ul class="dropdown-menu pull-right">
+                                                                    <li>
+                                                                        <a href="javascript:void(0);">
+                                                                            Update
+                                                                        </a>
+                                                                    </li>
+                                                                    <li class="divider"></li>
+                                                                    <li>
+                                                                        <a class="text-danger" href="javascript:Server.deleteSlaveServer(\''. $server->getIPV4() .'\', \''. $server->getUsername() .'\', \''. $server->getKeySSHPath() .'\');">
+                                                                            Delete
+                                                                        </a>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                    ')
+                                                    : 
+                                                    (''))
+                                                    .'
+                                            <!--/ panel toolbar button -->
 					</div>
 					<!--/ panel toolbar -->
 				</div>
@@ -168,7 +194,6 @@ function getHTMLPanelNewServer() {
 				<div style="" class="panel-collapse in pull out">
 					<div class="panel-body">
 						<div class="form-horizontal form-bordered">
-							<span class="hidden id-server-slave">'. $server->getID() .'</span>
 							<div class="form-group">
 								<label class="col-sm-3 control-label">IPV4</label>
 								<div class="col-sm-9">
@@ -202,14 +227,14 @@ function getHTMLPanelNewServer() {
 							</div>
 							<div class="form-group footer-server-info">
 							'.
-							((isset($_SESSION['auth']) && $_SESSION['auth'] == true) ? 
+							/*((isset($_SESSION['auth']) && $_SESSION['auth'] == true) ? 
 							('
 								<button type="button" class="btn btn-success btn-update-server">Update</button>
 								<img class="img_loading_update_server" src="image/spinner.gif" alt="Loading ..." style="display:none;margin-right: 10px; float:right;margin-top: 8px;" />
 							')
 							: 
 							(''))
-							.'
+							.*/'
 							</div>
 						</div>
 					</div>
