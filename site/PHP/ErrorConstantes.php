@@ -14,4 +14,5 @@ define('ERROR_COPY_FILE', 'Error: Copy file failed');
 define('ERROR_COMPRESS_FILE', 'Error: Compress file failed');
 define('ERROR_UPLOAD_SCRIPTS', 'Error: Upload scripts failed');
 define('ERROR_SSH_SECURISE', 'Error: SSH securise script failed');
+define('ERROR_SSH_KEY_PATH_NOT_FOUND', 'Error: key SSH path not found in BDD');
 ?>

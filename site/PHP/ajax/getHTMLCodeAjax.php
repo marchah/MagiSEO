@@ -10,5 +10,7 @@ if (isset($_POST["nameRequest"])) {
             echo getHTMLUSerButtonAuth();
         else if ($_POST["nameRequest"] == "getHTMLPanelNewServer")
             echo getHTMLPanelNewServer();
+        else if ($_POST["nameRequest"] == "getHTMLButtonsManageServer")
+            echo getHTMLButtonsManageServer();
 }
 ?>

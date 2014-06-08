@@ -26,125 +26,33 @@ function getHTMLUserButtonAuth() {
 	return false;
 }
 
-function getHTMLAllPanelServer() {
-	$listServer = ServerDAO::getListSlaveServer();
-	
-	$HTMLAllPanelServer = "";
-	
-	foreach($listServer as $server) {
-		$HTMLAllPanelServer .= '
-		<div class="col-md-4">
-			<!-- START panel -->
-			<div class="panel panel-default">
-				<!-- panel heading/header -->
-				<div class="panel-heading">
-					<h3 class="panel-title">'. $server->getIPV4() .'</h3>
-					<!-- panel toolbar -->
-					<div class="panel-toolbar text-right">
-						<!-- option -->
-						<div class="option">
-							<button class="btn up" data-toggle="panelcollapse"><i class="arrow"></i></button>
-						</div>
-						<!--/ option -->
-                                                <!-- panel toolbar button -->
-                                                '.
-							((isset($_SESSION['auth']) && $_SESSION['auth'] == true) ? 
-							('
-								<div class="btn-group">
-                                                                    <button class="btn btn-sm btn-danger dropdown-toggle" data-toggle="dropdown" type="button">
-                                                                        Action
-                                                                        <span class="caret"></span>
-                                                                    </button>
-                                                                    <ul class="dropdown-menu pull-right">
-                                                                        <li>
-                                                                            <a href="javascript:void(0);">
-                                                                                Update
-                                                                            </a>
-                                                                        </li>
-                                                                        <li class="divider"></li>
-                                                                        <li>
-                                                                            <a class="text-danger" href="javascript:Server.deleteSlaveServer(\''. $server->getIPV4() .'\', \''. $server->getUsername() .'\', \''. $server->getKeySSHPath() .'\');">
-                                                                                Delete
-                                                                            </a>
-                                                                        </li>
-                                                                    </ul>
-                                                                </div>
-							')
-							: 
-							(''))
-						.'
-                                            <!--/ panel toolbar button -->
-					</div>
-					<!--/ panel toolbar -->
-				</div>
-				<!--/ panel heading/header -->
-				
-				<!-- panel body with collapse capable -->
-				<div style="" class="panel-collapse in pull out">
-					<div class="panel-body">
-						<div class="form-horizontal form-bordered">
-							<div class="form-group">
-								<label class="col-sm-3 control-label">IPV4</label>
-								<div class="col-sm-9">
-									<p class="form-control-static">'. $server->getIPV4() .'</p>
-								</div>
-							</div>
-							
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Disk Using</label>
-								<div class="col-sm-9">
-									<p class="form-control-static">'. $server->getDiskCurrentSize() .'/'. $server->getDiskMaxSize() .'</p>
-								</div>
-							</div>
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Proc Using</label>
-								<div class="col-sm-9">
-									<p class="form-control-static">'. $server->getNbCurrentProc() .'/'. $server->getNbMaxProc() .'</p>
-								</div>
-							</div>
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Flash Using</label>
-								<div class="col-sm-9">
-									<p class="form-control-static">'. $server->getFlashCurrentSize() .'/'. $server->getFlashMaxSize() .'</p>
-								</div>
-							</div>
-							<div class="form-group">
-								<label class="col-sm-3 control-label">UserName</label>
-								<div class="col-sm-9">
-									<p class="form-control-static">'. $server->getUsername() .'</p>
-								</div>
-							</div>
-							<div class="form-group footer-server-info">
-							'.
-							/*((isset($_SESSION['auth']) && $_SESSION['auth'] == true) ? 
-							('
-								<button type="button" class="btn btn-success btn-update-server">Update</button>
-								<img class="img_loading_update_server" src="image/spinner.gif" alt="Loading ..." style="display:none;margin-right: 10px; float:right;margin-top: 8px;" />
-							')
-							: 
-							(''))
-							.*/'
-							</div>
-						</div>
-					</div>
-				</div>
-				<!--/ panel body with collapse capabale -->
-
-				<!-- Loading indicator -->
-				<div class="indicator"><span class="spinner"></span></div>
-				<!--/ Loading indicator -->
-			</div>
-			<!--/ END panel -->
-		</div>
-';
-	}
-	return $HTMLAllPanelServer;
+function getHTMLButtonsManageServer() {
+    if (isset($_SESSION['auth']) && $_SESSION['auth'] == true)
+		return '<div class="btn-group">
+                            <button class="btn btn-sm btn-danger dropdown-toggle" data-toggle="dropdown" type="button">
+                                Action
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu pull-right">
+                                <li>
+                                    <a href="javascript:void(0);">
+                                        Update
+                                    </a>
+                                </li>
+                                <li class="divider"></li>
+                                <li>
+                                    <a class="text-danger remove-server" href="#");">
+                                        Delete
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>';
+	http_response_code(401);
+	return false;
 }
 
-function getHTMLPanelNewServer() {
-    
-    $server = ServerDAO::getNewSlaveServer();
-    return '<div class="col-md-4">
+function getHTMLPanelServer($server) {
+    return '<div class="col-md-4 server-panel">
 			<!-- START panel -->
 			<div class="panel panel-default">
 				<!-- panel heading/header -->
@@ -160,27 +68,7 @@ function getHTMLPanelNewServer() {
                                                 <!-- panel toolbar button -->
                                                 '.
                                                     ((isset($_SESSION['auth']) && $_SESSION['auth'] == true) ? 
-                                                    ('
-                                                            <div class="btn-group">
-                                                                <button class="btn btn-sm btn-danger dropdown-toggle" data-toggle="dropdown" type="button">
-                                                                    Action
-                                                                    <span class="caret"></span>
-                                                                </button>
-                                                                <ul class="dropdown-menu pull-right">
-                                                                    <li>
-                                                                        <a href="javascript:void(0);">
-                                                                            Update
-                                                                        </a>
-                                                                    </li>
-                                                                    <li class="divider"></li>
-                                                                    <li>
-                                                                        <a class="text-danger" href="javascript:Server.deleteSlaveServer(\''. $server->getIPV4() .'\', \''. $server->getUsername() .'\', \''. $server->getKeySSHPath() .'\');">
-                                                                            Delete
-                                                                        </a>
-                                                                    </li>
-                                                                </ul>
-                                                            </div>
-                                                    ')
+                                                    (getHTMLButtonsManageServer())
                                                     : 
                                                     (''))
                                                     .'
@@ -197,7 +85,7 @@ function getHTMLPanelNewServer() {
 							<div class="form-group">
 								<label class="col-sm-3 control-label">IPV4</label>
 								<div class="col-sm-9">
-									<p class="form-control-static">'. $server->getIPV4() .'</p>
+									<p class="form-control-static server-ip">'. $server->getIPV4() .'</p>
 								</div>
 							</div>
 							
@@ -222,19 +110,10 @@ function getHTMLPanelNewServer() {
 							<div class="form-group">
 								<label class="col-sm-3 control-label">UserName</label>
 								<div class="col-sm-9">
-									<p class="form-control-static">'. $server->getUsername() .'</p>
+									<p class="form-control-static server-username">'. $server->getUsername() .'</p>
 								</div>
 							</div>
 							<div class="form-group footer-server-info">
-							'.
-							/*((isset($_SESSION['auth']) && $_SESSION['auth'] == true) ? 
-							('
-								<button type="button" class="btn btn-success btn-update-server">Update</button>
-								<img class="img_loading_update_server" src="image/spinner.gif" alt="Loading ..." style="display:none;margin-right: 10px; float:right;margin-top: 8px;" />
-							')
-							: 
-							(''))
-							.*/'
 							</div>
 						</div>
 					</div>
@@ -249,14 +128,18 @@ function getHTMLPanelNewServer() {
 		</div>';
 }
 
-/*
+function getHTMLAllPanelServer() {
+    $listServer = ServerDAO::getListSlaveServer();
 
-									'. (($server->getState()) ? ('<span class="switchery" style="border-color: #64BD63; box-shadow: 0px 0px 0px 16px rgb(100,…s ease 0s, background-color 1.2s ease 0s; background-color: #64BD63;">
-																	<small style="left: 18px; transition: left 0.2s ease 0s;"></small>
-																</span>')
-															: ('<span class="switchery" style="border-color: #DFDFDF; box-shadow: 0px 0px 0px 0px rgb(223, …t; transition: border 0.4s ease 0s, box-shadow 0.4s ease 0s;">
-																	<small style="left: 0px; transition: left 0.2s ease 0s;"></small>
-																</span>'))
-									.'
-									*/
+    $HTMLAllPanelServer = "";
+    foreach($listServer as $server) {
+        $HTMLAllPanelServer .= getHTMLPanelServer($server);
+    }
+    return $HTMLAllPanelServer;
+}
+
+function getHTMLPanelNewServer() {
+    return getHTMLPanelServer(ServerDAO::getNewSlaveServer());
+}
+
 ?>

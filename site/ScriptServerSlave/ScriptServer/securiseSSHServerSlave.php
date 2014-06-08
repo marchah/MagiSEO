@@ -36,7 +36,7 @@ function securiseSSHServerSlave() {
                     ."/etc/init.d/ssh restart"
                 . "\"; "
         , $output, $return_val);
-    echo $return_val;
+    echo $return_val . "\n";
 }
 
 securiseSSHServerSlave();

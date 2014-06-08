@@ -47,12 +47,12 @@ function authSucces() {
 	   dataType: document.json,
 	   error: function (xhr) { if (xhr.status == 401) alert('Error: ' + xhr.statusText); console.log('error:', xhr.responseText); },
 	   success: function (HTMLCode) {
-			if (HTMLCode != false)
-				$('#btn_authentification').replaceWith(HTMLCode);
-				attachEventOnDisconectButton();
-				$('.footer-server-info').replaceWith('<button type="button" class="btn btn-success btn-update-server">Update</button><img class="img_loading_update_server" src="image/spinner.gif" alt="Loading ..." style="display:none;margin-right: 10px; float:right;margin-top: 8px;" />');
-				attachEventOnUpdateServerButton();
-		}
+			if (HTMLCode != false) {
+                            $('#btn_authentification').replaceWith(HTMLCode);
+                            attachEventOnDisconectButton();
+                            Server.displayButtonsManageServer();
+                        }
+                }
 	});
 }
 

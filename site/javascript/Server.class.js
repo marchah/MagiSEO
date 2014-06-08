@@ -9,6 +9,7 @@ Server.displayNewPanelServer = function () {
        error: function (xhr) { console.log('error:', xhr.responseText);},
        success: function (panel) {
             $("#list-planel").append(panel);
+            attachEventOnButtonsManageServer();
         }
     });
 }
@@ -73,10 +74,11 @@ Server.progressDesinstall = function () {
     $.ajax({
        type: "POST",
        url: urlServer + ajaxFolderPath + "progressAjax.php",
-       data:{nameRequest: "getStateDesnstallServer"},
+       data:{nameRequest: "getStateDesinstallServer"},
        dataType: document.json,
        error: function (xhr) { console.log('error:', xhr.responseText);},
        success: function (step) {
+                //alert(step);
                 var result = step.split('/');
                 
                 var current = parseInt(result[0]) + 1;
@@ -92,7 +94,7 @@ Server.progressDesinstall = function () {
     });
 }
 
-Server.deleteSlaveServer = function (ipServerSSH, login, keySSHPath) {
+Server.deleteSlaveServer = function (serverPanel, ipServerSSH, login) {
     if ($("#progress-bar-container-server").css("display") != "none") {
         alert("... Please Wait The End Of The Current Process ...");
         return ;
@@ -101,11 +103,14 @@ Server.deleteSlaveServer = function (ipServerSSH, login, keySSHPath) {
     $.ajax({
        type: "POST",
        url: urlServer + ajaxFolderPath + "serverAjax.php",
-       data:{nameRequest: "desinstallServer", ipServerSSH: ipServerSSH, login: login, keySSHPath: keySSHPath},
+       data:{nameRequest: "desinstallServer", ipServerSSH: ipServerSSH, login: login},
        dataType: document.json,
        error: function (xhr) { console.log('error:', xhr.responseText);},
        success: function (str) {
-                alert(str);
+                if (str != true)
+                    serverPanel.remove();
+                else
+                    alert(str);
         },
         complete : function() {
             clearInterval(x);
@@ -114,40 +119,33 @@ Server.deleteSlaveServer = function (ipServerSSH, login, keySSHPath) {
         }
     });
 }
+$(".remove-server").click(function () {
+    var serverPanel = $(this).parents(".server-panel");
+    Server.deleteSlaveServer(serverPanel, serverPanel.find(".server-ip").text(), serverPanel.find(".server-username").text());    
+});
 
-/*
-Server.updateInfo = function(form, id, ipv4, name, login, password) {
-    $.ajax({
-       type: "POST",
-       url: urlServer + ajaxFolderPath + "serverAjax.php",
-       data:{nameRequest: "updateInfo", id: id, ipv4: ipv4, name: name, login: login, password: password},
-       dataType: document.json,
-       error: function (xhr) { if (xhr.status == 401) alert('Error: ' + xhr.statusText); console.log('error:', xhr.responseText);$(form).find(".img_loading_update_server").css('display', 'none');},
-       success: function (str) {
-                    $(form).find(".img_loading_update_server").css('display', 'none');
-                    var nb = parseInt(str);
-                    if (nb == 1)
-                            alert("Upload Success");
-                    else if (nb == 0)
-                            alert("Any Changed");
-                    else
-                            alert("Error: more than 1 row updated");
-            }
+var attachEventOnButtonsManageServer = function() {
+    $('.remove-server').click(function(){
+        var serverPanel = $(this).parents(".server-panel");
+        Server.deleteSlaveServer(serverPanel, serverPanel.find(".server-ip").text(), serverPanel.find(".server-username").text()); 
     });
 }
 
-var attachEventOnUpdateServerButton = function() {
-    $('.btn-update-server').click(function(){
-        var form = ($(this).parent().parent());
-        $(form).find(".img_loading_update_server").css('display', 'inline');
-        var id = $(form).find('.id-server-slave').text();
-        var ipv4 = $(form).find('.ipv4-server-slave').val();
-        var name = $(form).find('.name-server-slave').val();
-        var username = $(form).find('.username-server-slave').val();
-        var password = $(form).find('.password-server-slave').val();
-        Server.updateInfo(form, id, ipv4, name, username, password);
-    });
-}*/
+Server.displayButtonsManageServer = function () {
+    $.ajax({
+	   type: "POST",
+	   url: urlServer + ajaxFolderPath + "getHTMLCodeAjax.php",
+	   data:{nameRequest: "getHTMLButtonsManageServer"},
+	   dataType: document.json,
+	   error: function (xhr) { if (xhr.status == 401) alert('Error: ' + xhr.statusText); console.log('error:', xhr.responseText); },
+	   success: function (HTMLCode) {
+			if (HTMLCode != false) {
+                            $('.panel-toolbar').append(HTMLCode);
+                            attachEventOnButtonsManageServer();
+                        }
+		}
+	});
+}
 
 
 $('#add-slave-server').click(function() {

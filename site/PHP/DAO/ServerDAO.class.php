@@ -42,10 +42,10 @@ class ServerDAO extends DAO {
             return $bdd->lastInsertId();
         }
         
-        static function deleteServer($IPV4) { // manque beaucoup d'info a delete et plutot prendre Server
+        static function deleteServer($IPV4) {
             $bdd = parent::ConnectionBDD();
 
-            $req = $bdd->prepare('DELETE FROM server_slave WHERE IPV4=:IPV4');
+            $req = $bdd->prepare('DELETE slave, info FROM server_slave AS slave INNER JOIN server_information AS info ON slave.id=info.idserver WHERE IPV4=:IPV4');
             if (!$req->execute(array(
                             'IPV4' => $IPV4
                     ))) {
@@ -101,11 +101,21 @@ class ServerDAO extends DAO {
                                                             FROM server_slave sslave 
                                                             INNER JOIN server_information sinfo ON sslave.id = sinfo.idserver ORDER BY sslave.id DESC LIMIT 1');
             $server;
-            if ($data = $reponse->fetch()) {
-                $server = new Server($data);	
-            }
+            if ($data = $reponse->fetch())
+                $server = new Server($data);
             $reponse->closeCursor();
             return $server;
+        }
+        
+        static function getKeySSHPathServerByIP($ip) {
+            $bdd = parent::ConnectionBDD();
+            
+            $ret = false;
+            $reponse = $bdd->query('SELECT keysshpath FROM server_slave WHERE IPV4='. $bdd->quote($ip) .'');
+            if ($data = $reponse->fetch())
+                $ret = $data['keysshpath'];
+            $reponse->closeCursor();
+            return $ret;
         }
         
         static function isServerExist($IPV4) {
