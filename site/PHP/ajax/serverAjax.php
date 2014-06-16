@@ -383,6 +383,7 @@ if (isset($_POST["nameRequest"])) {
         exit(ERROR_REQUIRE_AUTH);
     }
     Cache::clean(PATH_ROOT_WEBSITE . "/cache/install");
+    Cache::clean(PATH_ROOT_WEBSITE . "/cache/desinstall");
     if ($_POST["nameRequest"] == "installServer")
 	installServerSlave();
     else if ($_POST["nameRequest"] == "desinstallServer")
