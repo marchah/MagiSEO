@@ -107,7 +107,7 @@ Server.deleteSlaveServer = function (serverPanel, ipServerSSH, login) {
        dataType: document.json,
        error: function (xhr) { console.log('error:', xhr.responseText);},
        success: function (str) {
-                if (str != true)
+                if (str != true)    // pb ici, ne rentre pas dedans pourtant renvoie '1'
                     serverPanel.remove();
                 else
                     alert(str);
@@ -119,10 +119,11 @@ Server.deleteSlaveServer = function (serverPanel, ipServerSSH, login) {
         }
     });
 }
-$(".remove-server").click(function () {
+
+/*$(".remove-server").click(function () {
     var serverPanel = $(this).parents(".server-panel");
     Server.deleteSlaveServer(serverPanel, serverPanel.find(".server-ip").text(), serverPanel.find(".server-username").text());    
-});
+});*/
 
 var attachEventOnButtonsManageServer = function() {
     $('.remove-server').click(function(){
@@ -130,6 +131,8 @@ var attachEventOnButtonsManageServer = function() {
         Server.deleteSlaveServer(serverPanel, serverPanel.find(".server-ip").text(), serverPanel.find(".server-username").text()); 
     });
 }
+
+attachEventOnButtonsManageServer();
 
 Server.displayButtonsManageServer = function () {
     $.ajax({

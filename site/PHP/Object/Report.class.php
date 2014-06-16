@@ -8,15 +8,17 @@ class Report {
 	private $_title;
 	private $_description;
 	private $_type;
+        private $_typeName;
 	private $_date;
 
-	public function __construct($id, $idUser, $userLogin, $title, $description, $type, $date) {
+	public function __construct($id, $idUser, $userLogin, $title, $description, $type, $typeName, $date) {
             $this->_id = $id;
             $this->_idUser = $idUser;
             $this->_userLogin = $userLogin;
             $this->_title = $title;
             $this->_description = $description;
             $this->_type = $type;
+            $this->_typeName = $typeName;
             $this->_date = $date;
 	}
 
@@ -26,6 +28,7 @@ class Report {
         public function getTitle()          {return $this->_title;}
         public function getDescription()    {return $this->_description;}
         public function getType()           {return $this->_type;}
+        public function getTypeName()       {return $this->_typeName;}
         public function getDate()           {return $this->_date;}
 
         public function setId($id)                      {$this->_id = $id;}
@@ -34,6 +37,7 @@ class Report {
         public function setTitle($title)                {$this->_title = $title;}
         public function setDescription($description)    {$this->_description = $description;}
         public function setType($type)                  {$this->_type = $type;}
+        public function setTypeName($typeName)          {$this->_typeName = $typeName;}
         public function setDate($date)                  {$this->_date = $date;}
         
     public function __toString() {

@@ -7,7 +7,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/DAO/DAO.class.php';
 class ReportDAO extends DAO {
    
     private static function createReport($data) {
-        return new Report($data['id'], $data['iduser'], $data['login'], $data['title'], $data['description'], $data['type'], $data['date']);
+        return new Report($data['id'], $data['iduser'], $data['login'], $data['title'], $data['description'], $data['type'], $data['typeName'], $data['date']);
     }
 
     static function insertReport($report) {
@@ -33,7 +33,19 @@ class ReportDAO extends DAO {
     static function getAllReport() {
         $listReport = array();
         $bdd = parent::ConnectionBDD();
-        $response = $bdd->query('SELECT l.*,  u.login FROM reporting l LEFT JOIN user u ON l.iduser = u.id ORDER BY l.id DESC');
+        $response = $bdd->query('SELECT l.*,  rt.name AS \'typeName\', u.login FROM reporting l INNER JOIN reporting_type rt on rt.id = l.type LEFT JOIN user u ON l.iduser = u.id ORDER BY l.id DESC');
+
+        while ($data = $response->fetch()) {
+            $listReport[] = self::createReport($data);
+        }
+        $response->closeCursor();
+        return $listReport;
+    }
+    
+    static function getAllReportExceptLog() {
+        $listReport = array();
+        $bdd = parent::ConnectionBDD();
+        $response = $bdd->query('SELECT l.*,  rt.name AS \'typeName\', u.login FROM reporting l INNER JOIN reporting_type rt on rt.id = l.type LEFT JOIN user u ON l.iduser = u.id WHERE l.type != 6 ORDER BY l.id ASC');
 
         while ($data = $response->fetch()) {
             $listReport[] = self::createReport($data);
@@ -45,7 +57,7 @@ class ReportDAO extends DAO {
     static function getReportByType($type) {
         $listReport = array();
         $bdd = parent::ConnectionBDD();
-        $response = $bdd->query('SELECT l.*,  u.login FROM reporting l LEFT JOIN user u ON l.iduser = u.id WHERE l.type = ' . $type . ' ORDER BY l.id DESC LIMIT ' . LOG_NB_LIMIT);
+        $response = $bdd->query('SELECT l.*,  rt.name AS \'typeName\', u.login FROM reporting l INNER JOIN reporting_type rt on rt.id = l.type LEFT JOIN user u ON l.iduser = u.id WHERE l.type = ' . $type . ' ORDER BY l.id DESC LIMIT ' . LOG_NB_LIMIT);
 
         while ($data = $response->fetch()) {
             $listReport[] = self::createReport($data);

@@ -51,6 +51,7 @@ function authSucces() {
                             $('#btn_authentification').replaceWith(HTMLCode);
                             attachEventOnDisconectButton();
                             Server.displayButtonsManageServer();
+                            Report.displayButtonsReportSolved();
                         }
                 }
 	});

@@ -27,9 +27,14 @@
 <link rel="stylesheet" href="library/jquery/css/jquery-ui.min.css">
 <!--/ Library stylesheet -->
 
+<!-- Plugins stylesheet : optional -->
+<link rel="stylesheet" href="plugins/datatables/css/jquery.datatables.min.css">
+<!--/ Plugins stylesheet -->
+
 <!-- Application stylesheet : mandatory -->
 <link rel="stylesheet" href="stylesheet/layout.min.css">
 <link rel="stylesheet" href="stylesheet/uielement.min.css">
+<link rel="stylesheet" href="stylesheet/backend.min.css">
 <!--/ Application stylesheet -->
 <!-- END STYLESHEETS -->
 

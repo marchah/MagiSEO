@@ -2,6 +2,8 @@
 @session_start();
 require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/Object/Server.class.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/DAO/ServerDAO.class.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/Object/Report.class.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/DAO/ReportDAO.class.php';
 
 function getHTMLUserButtonAuth() {
 	if (isset($_SESSION['auth']) && $_SESSION['auth'] == true)
@@ -140,6 +142,71 @@ function getHTMLAllPanelServer() {
 
 function getHTMLPanelNewServer() {
     return getHTMLPanelServer(ServerDAO::getNewSlaveServer());
+}
+
+function getStyleLabelTypeReport($type) {
+    $style = "";
+    switch ($type) {
+        case REPORTING_TYPE_SLAVE_ERROR:
+            $style = "label-danger";
+            break;
+        case REPORTING_TYPE_SLAVE_BUG:
+            $style = "label-warning";
+            break;
+        case REPORTING_TYPE_SLAVE_WARNING:
+            $style = "label-warning";
+            break;
+        case REPORTING_TYPE_SECURITY:
+            $style = "label-primary";
+            break;
+        case REPORTING_TYPE_INTERNAL_ERROR:
+            $style = "label-danger";
+            break;
+        default:
+            break;
+    }
+    return $style;
+}
+
+function getHTMLTableAllReport() {
+    $listReport = ReportDAO::getAllReportExceptLog();
+    
+    $HTMLTableAllReport = ' <thead>
+                                <tr id="table-all-report-thead-tr">
+                                    '.
+                                    ((isset($_SESSION['auth']) && $_SESSION['auth'] == true) ? 
+                                    ('<th>Action</th>')
+                                    : 
+                                    (''))
+                                    .'
+                                    <th style="display: none">id</th>
+                                    <th>User</th>
+                                    <th>Title</th>
+                                    <th>Description</th>
+                                    <th>Type</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>';
+    foreach($listReport as $report) {
+        $HTMLTableAllReport .= '<tr class="table-all-report-tbody-tr">
+                                    
+                                    '.
+                                    ((isset($_SESSION['auth']) && $_SESSION['auth'] == true) ? 
+                                    ('<td><button class="btn btn-success btn-report-solved" type="button">Solved</button></td>')
+                                    : 
+                                    (''))
+                                    .'
+                                    <td class="report-id" style="display: none">'.$report->getId().'</td>
+                                    <td>'.$report->getuserLogin().'</td>
+                                    <td>'.$report->getTitle().'</td>
+                                    <td>'.$report->getDescription().'</td>
+                                    <td><span class="label '. getStyleLabelTypeReport($report->getType()) .'">'.$report->getTypeName().'</span></td>
+                                    <td>'.$report->getDate().'</td>
+                                </tr>';
+    }
+    $HTMLTableAllReport .= '</tbody>';
+    return $HTMLTableAllReport;
 }
 
 ?>
