@@ -107,7 +107,7 @@ Server.deleteSlaveServer = function (serverPanel, ipServerSSH, login) {
        dataType: document.json,
        error: function (xhr) { console.log('error:', xhr.responseText);},
        success: function (str) {
-                if (str != true)    // pb ici, ne rentre pas dedans pourtant renvoie '1'
+                if (str != false)    // pb ici, ne rentre pas dedans pourtant renvoie '1'
                     serverPanel.remove();
                 else
                     alert(str);

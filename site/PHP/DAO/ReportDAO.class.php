@@ -7,7 +7,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/DAO/DAO.class.php';
 class ReportDAO extends DAO {
    
     private static function createReport($data) {
-        return new Report($data['id'], $data['iduser'], $data['login'], $data['title'], $data['description'], $data['type'], $data['typeName'], $data['date']);
+        return Report::withTypeName($data['id'], $data['iduser'], $data['login'], $data['title'], $data['description'], $data['type'], $data['typeName'], $data['date']);
     }
 
     static function insertReport($report) {

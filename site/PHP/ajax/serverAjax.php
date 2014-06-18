@@ -208,7 +208,6 @@ function cpAndPutConstantesInstallScript($ipServerSSH, $login) {
     while ($file = readdir($folder)) {
         if ($file != "." && $file != "..")
             if (!copy(PATH_ROOT_WEBSITE . PATH_MASTER_SCRIPT_SERVER_SLAVE . '/ScriptServer/' . $file, PATH_ROOT_WEBSITE . PATH_MASTER_SCRIPT_SERVER_SLAVE_TO_UPLOAD . '/' . $file)) {
-                //$_SESSION[INSTALL_SERVER_STEP] = INSTALL_SERVER_STEP_ERROR;
                 Cache::write(PATH_ROOT_WEBSITE . "/cache/install", INSTALL_SERVER_STEP_ERROR);
                 ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), $_SESSION['user']->getLogin(), "cpAndPutConstantesInstallSpript() Error", ERROR_COPY_FILE . " $file", REPORTING_TYPE_SLAVE_ERROR, date("Y-m-d H:i:s")));
                 exit(ERROR_COPY_FILE);
@@ -286,7 +285,7 @@ function installServerSlave() {
         Cache::write(PATH_ROOT_WEBSITE . "/cache/install", INSTALL_SERVER_STEP_ERROR);
         exit(ERROR_SSH_SERVER_ALREADY_CONFIGURATED);
     }
-    set_time_limit(400);
+    set_time_limit(600);
     
     if (!file_exists(PATH_ROOT_WEBSITE . PATH_MASTER_SCRIPT_SERVER_SLAVE_TO_UPLOAD))
         mkdir(PATH_ROOT_WEBSITE . PATH_MASTER_SCRIPT_SERVER_SLAVE_TO_UPLOAD);

@@ -11,16 +11,22 @@ class Report {
         private $_typeName;
 	private $_date;
 
-	public function __construct($id, $idUser, $userLogin, $title, $description, $type, $typeName, $date) {
+	public function __construct($id, $idUser, $userLogin, $title, $description, $type, $date) {
             $this->_id = $id;
             $this->_idUser = $idUser;
             $this->_userLogin = $userLogin;
             $this->_title = $title;
             $this->_description = $description;
             $this->_type = $type;
-            $this->_typeName = $typeName;
+            $this->_typeName = "";
             $this->_date = $date;
 	}
+        
+        public static function withTypeName($id, $idUser, $userLogin, $title, $description, $type, $typeName, $date) {
+            $instance = new self($id, $idUser, $userLogin, $title, $description, $type, $date);
+            $instance->_typeName = $typeName;
+            return $instance;
+        }
 
         public function getId()             {return $this->_id;}
         public function getIdUser()         {return $this->_idUser;}
