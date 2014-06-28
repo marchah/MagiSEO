@@ -68,10 +68,61 @@ function getStateDesinstallServer() {
     echo $step . "/" . $msg . "/" . DESINSTALL_SERVER_STEP_DONE;
 }
 
+function getStateInstallVM() {
+    $step = Cache::read(PATH_ROOT_WEBSITE . "/cache/installVM");
+    $msg = "";
+    switch ($step)
+    {
+        case INSTALL_VM_STEP_ERROR:
+            $msg = "Error";
+            break;
+        case INSTALL_VM_STEP_INIT :
+            $msg = "Initialisation";
+            break;
+        case INSTALL_VM_STEP_CONNECTION_SERVER:
+            $msg = "Connection server";
+            break;
+        case INSTALL_VM_STEP_INSTALLING : 
+            $msg = "Installing VM";
+            break;
+        case INSTALL_VM_STEP_SAVING_BDD :
+            $msg = "Saving informations VM";
+            break;
+        case INSTALL_VM_STEP_DONE :
+            $msg = "Install Done";
+            break;
+    }
+    
+    echo $step . "/" . $msg . "/" . INSTALL_VM_STEP_DONE;
+}
+
+function getStateDesinstallVM() {
+    $step = Cache::read(PATH_ROOT_WEBSITE . "/cache/desinstallVM");
+    $msg = "";
+    switch ($step)
+    {
+        case DESINSTALL_VM_STEP_ERROR:
+            $msg = "Error";
+            break;
+        case DESINSTALL_VM_STEP_INIT :
+            $msg = "Initialisation";
+            break;
+        case DESINSTALL_VM_STEP_DONE :
+            $msg = "Desinstall Done";
+            break;
+    }
+    
+    echo $step . "/" . $msg . "/" . DESINSTALL_VM_STEP_DONE;
+}
+
 if (isset($_POST["nameRequest"])) {
     if ($_POST["nameRequest"] == "getStateInstallServer")
 	getStateInstallServer();
     else if ($_POST["nameRequest"] == "getStateDesinstallServer")
 	getStateDesinstallServer();
+    else if ($_POST["nameRequest"] == "getStateInstallVM")
+	getStateInstallVM();
+    else if ($_POST["nameRequest"] == "getStateDesinstallVM")
+	getStateDesinstallVM();
 }
 

@@ -51,6 +51,9 @@ function authSucces() {
                             $('#btn_authentification').replaceWith(HTMLCode);
                             attachEventOnDisconectButton();
                             Server.displayButtonsManageServer();
+                            Server.displayButtonAddServer();
+                            VM.displayButtonsManageVM();
+                            VM.displayButtonAddVM();
                             Report.displayButtonsReportSolved();
                         }
                 }

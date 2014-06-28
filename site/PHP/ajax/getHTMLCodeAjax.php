@@ -12,5 +12,13 @@ if (isset($_POST["nameRequest"])) {
             echo getHTMLPanelNewServer();
         else if ($_POST["nameRequest"] == "getHTMLButtonsManageServer")
             echo getHTMLButtonsManageServer();
+        else if ($_POST["nameRequest"] == "getHTMLButtonAddServer")
+            echo getHTMLButtonAddServer();
+        else if ($_POST["nameRequest"] == "getHTMLButtonsManageVM")
+            echo getHTMLButtonsManageVM();
+        else if ($_POST["nameRequest"] == "getHTMLButtonAddVM")
+            echo getHTMLButtonAddVM();
+        else if ($_POST["nameRequest"] == "getHTMLPanelNewVM")
+            echo getHTMLPanelNewVM();
 }
 ?>

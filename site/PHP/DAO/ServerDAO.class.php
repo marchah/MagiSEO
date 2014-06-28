@@ -118,6 +118,21 @@ class ServerDAO extends DAO {
             return $ret;
         }
         
+        static function getServerById($id) {
+            $bdd = parent::ConnectionBDD();
+            
+            $ret = false;
+            $reponse = $bdd->query('SELECT sslave.*, sinfo.disk_max_size, sinfo.disk_current_size, 
+                                                            sinfo.nb_max_proc, sinfo.nb_current_proc, sinfo.flash_max_size, sinfo.flash_current_size 
+                                                            FROM server_slave sslave 
+                                                            INNER JOIN server_information sinfo ON sslave.id = sinfo.idserver WHERE sslave.id='. $bdd->quote($id) .'');
+            $server = null;
+            if ($data = $reponse->fetch())
+                $server = new Server($data);
+            $reponse->closeCursor();
+            return $server;
+        }
+        
         static function isServerExist($IPV4) {
             $bdd = parent::ConnectionBDD();
             

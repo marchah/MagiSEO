@@ -2,6 +2,7 @@
 @session_start();
 require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/Object/Server.class.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/DAO/ServerDAO.class.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/DAO/VMDAO.class.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/Object/Report.class.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/DAO/ReportDAO.class.php';
 
@@ -26,6 +27,18 @@ function getHTMLUserButtonAuth() {
 				</ul>';
 	http_response_code(401);
 	return false;
+}
+
+function getHTMLButtonAddServer() {
+      if (isset($_SESSION['auth']) && $_SESSION['auth'] == true)
+		return '<button id="add-slave-server" class="btn btn-info ladda-button ladda-progress mb5" data-style="expand-right">'
+                            .'<span class="ladda-label">Add A Slave Server</span>'
+                            .'<span class="ladda-spinner"></span>'
+                            .'<span class="ladda-spinner"></span>'
+                            .'<div class="ladda-progress" style="width: 100px;"></div>'
+                        .'</button>';
+	http_response_code(401);
+	return false;  
 }
 
 function getHTMLButtonsManageServer() {
@@ -61,7 +74,7 @@ function getHTMLPanelServer($server) {
 				<div class="panel-heading">
 					<h3 class="panel-title">'. $server->getIPV4() .'</h3>
 					<!-- panel toolbar -->
-					<div class="panel-toolbar text-right">
+					<div class="panel-toolbar text-right panel-toolbar-server">
 						<!-- option -->
 						<div class="option">
 							<button class="btn up" data-toggle="panelcollapse"><i class="arrow"></i></button>
@@ -142,6 +155,126 @@ function getHTMLAllPanelServer() {
 
 function getHTMLPanelNewServer() {
     return getHTMLPanelServer(ServerDAO::getNewSlaveServer());
+}
+
+function getHTMLButtonsManageVM() {
+    if (isset($_SESSION['auth']) && $_SESSION['auth'] == true)
+		return '<div class="btn-group">
+                            <button class="btn btn-sm btn-danger dropdown-toggle" data-toggle="dropdown" type="button">
+                                Action
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu pull-right">
+                                <li>
+                                    <a href="javascript:void(0);">
+                                        Update
+                                    </a>
+                                </li>
+                                <li class="divider"></li>
+                                <li>
+                                    <a class="text-danger remove-vm" href="#");">
+                                        Delete
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>';
+	http_response_code(401);
+	return false;
+}
+
+function getHTMLPanelVM($VM) {
+    return '<div class="col-md-4 server-panel">
+			<!-- START panel -->
+			<div class="panel panel-default">
+				<!-- panel heading/header -->
+				<div class="panel-heading">
+					<h3 class="panel-title">Server: '. $VM->getServerIP() .'</h3>
+					<!-- panel toolbar -->
+					<div class="panel-toolbar text-right panel-toolbar-vm">
+						<!-- option -->
+						<div class="option">
+							<button class="btn up" data-toggle="panelcollapse"><i class="arrow"></i></button>
+						</div>
+						<!--/ option -->
+                                                <!-- panel toolbar button -->
+                                                '.
+                                                    ((isset($_SESSION['auth']) && $_SESSION['auth'] == true) ? 
+                                                    (getHTMLButtonsManageVM())
+                                                    : 
+                                                    (''))
+                                                    .'
+                                            <!--/ panel toolbar button -->
+					</div>
+					<!--/ panel toolbar -->
+				</div>
+				<!--/ panel heading/header -->
+				
+				<!-- panel body with collapse capable -->
+				<div style="" class="panel-collapse in pull out">
+					<div class="panel-body">
+						<div class="form-horizontal form-bordered">
+							<div class="form-group">
+								<label class="col-sm-3 control-label">IPV4</label>
+								<div class="col-sm-9">
+									<p class="form-control-static vm-ip">'. $VM->getIP() .'</p>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label class="col-sm-3 control-label">Name</label>
+								<div class="col-sm-9">
+									<p class="form-control-static">'. $VM->getName() .'</p>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">Disk Size</label>
+								<div class="col-sm-9">
+									<p class="form-control-static">'. $VM->getHDD() .'</p>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">RAM Size</label>
+								<div class="col-sm-9">
+									<p class="form-control-static">'. $VM->getRAM() .'</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--/ panel body with collapse capabale -->
+
+				<!-- Loading indicator -->
+				<div class="indicator"><span class="spinner"></span></div>
+				<!--/ Loading indicator -->
+			</div>
+			<!--/ END panel -->
+		</div>';
+}
+
+function getHTMLAllPanelVM() {
+    $listVM = VMDAO::getListVM();
+
+    $HTMLAllPanelVM = "";
+    foreach($listVM as $VM) {
+        $HTMLAllPanelVM .= getHTMLPanelVM($VM);
+    }
+    return $HTMLAllPanelVM;
+}
+
+function getHTMLPanelNewVM() {
+    return getHTMLPanelVM(VMDAO::getNewVM());
+}
+
+function getHTMLButtonAddVM() {
+      if (isset($_SESSION['auth']) && $_SESSION['auth'] == true)
+		return '<button id="add-vm" class="btn btn-info ladda-button ladda-progress mb5" data-style="expand-right">'
+                            .'<span class="ladda-label">Add A VM</span>'
+                            .'<span class="ladda-spinner"></span>'
+                            .'<span class="ladda-spinner"></span>'
+                            .'<div class="ladda-progress" style="width: 100px;"></div>'
+                        .'</button>';
+	http_response_code(401);
+	return false;  
 }
 
 function getStyleLabelTypeReport($type) {

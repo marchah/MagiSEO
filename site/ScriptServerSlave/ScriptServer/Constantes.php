@@ -21,7 +21,7 @@ function ConnectionBDD() {
     }
     catch (Exception $e)
     {
-        die('0Erreur : ' . $e->getMessage());
+        die('Erreur : ' . $e->getMessage() . "\n");
     }
 }
 

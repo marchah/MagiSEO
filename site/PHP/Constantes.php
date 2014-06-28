@@ -17,4 +17,13 @@ define('LOG_NB_LIMIT', 10);
 
 define('PATH_ROOT_WEBSITE', $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/');
 
+
+/*** VM Constantes ***/
+
+define('VM_MIN_SIZE_RAM', 512);
+define('VM_MIN_SIZE_HDD', 10000);
+
+define('VM_STATE_PROCESSING', 1);
+define('VM_STATE_DONE', 2);
+
 ?>

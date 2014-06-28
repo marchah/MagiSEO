@@ -21,6 +21,10 @@ Server.hideProgressBar = function () {
 }
 
 Server.addSlaveServer = function (ipv4, login, password) {
+    if ($("#progress-bar-container-server").css("display") != "none") {
+        alert("... Please Wait The End Of The Current Process ...");
+        return ;
+    }
     var x = setInterval(Server.progressInstall, 2000);
     $.ajax({
        type: "POST",
@@ -107,7 +111,7 @@ Server.deleteSlaveServer = function (serverPanel, ipServerSSH, login) {
        dataType: document.json,
        error: function (xhr) { console.log('error:', xhr.responseText);},
        success: function (str) {
-                if (str != false)    // pb ici, ne rentre pas dedans pourtant renvoie '1'
+                if (str == 1)
                     serverPanel.remove();
                 else
                     alert(str);
@@ -130,7 +134,7 @@ var attachEventOnButtonsManageServer = function() {
         var serverPanel = $(this).parents(".server-panel");
         Server.deleteSlaveServer(serverPanel, serverPanel.find(".server-ip").text(), serverPanel.find(".server-username").text()); 
     });
-}
+};
 
 attachEventOnButtonsManageServer();
 
@@ -143,23 +147,42 @@ Server.displayButtonsManageServer = function () {
 	   error: function (xhr) { if (xhr.status == 401) alert('Error: ' + xhr.statusText); console.log('error:', xhr.responseText); },
 	   success: function (HTMLCode) {
 			if (HTMLCode != false) {
-                            $('.panel-toolbar').append(HTMLCode);
+                            $('.panel-toolbar-server').append(HTMLCode);
                             attachEventOnButtonsManageServer();
                         }
 		}
 	});
-}
+};
 
+var attachEventOnButtonAddServer = function () {
+    $('#add-slave-server').click(function() {
+        if ($("#progress-bar-container-server").css("display") != "none") {
+            alert("... Please Wait The End Of The Current Process ...");
+            return ;
+        }
+        $("#add-slave-server-failed").text('');
+        $("#add-slave-server-failed").css('display', 'none');
+        $('#AddSlaveServerModal').modal();
+    });
+};
 
-$('#add-slave-server').click(function() {
-    if ($("#progress-bar-container-server").css("display") != "none") {
-        alert("... Please Wait The End Of The Current Process ...");
-        return ;
-    }
-    $("#add-slave-server-failed").text('');
-    $("#add-slave-server-failed").css('display', 'none');
-    $('#AddSlaveServerModal').modal();
-});
+attachEventOnButtonAddServer();
+
+Server.displayButtonAddServer = function () {
+        $.ajax({
+	   type: "POST",
+	   url: urlServer + ajaxFolderPath + "getHTMLCodeAjax.php",
+	   data:{nameRequest: "getHTMLButtonAddServer"},
+	   dataType: document.json,
+	   error: function (xhr) { if (xhr.status == 401) alert('Error: ' + xhr.statusText); console.log('error:', xhr.responseText); },
+	   success: function (HTMLCode) {
+			if (HTMLCode != false) {
+                            $('#panel-add-server-slave').append(HTMLCode);
+                            attachEventOnButtonAddServer();
+                        }
+		}
+	});
+};
 
 function Require(errorMsg) {
     $("#add-slave-server-failed").text(errorMsg);

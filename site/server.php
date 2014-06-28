@@ -61,20 +61,23 @@ require_once('include/menu.html');
                                     </div>
                                 </div>
 
-                                <button id="add-slave-server" class="btn btn-info ladda-button ladda-progress mb5" data-style="expand-right">
-                                    <span class="ladda-label">Add A Slave Server</span>
-                                    <span class="ladda-spinner"></span>
-                                    <span class="ladda-spinner"></span>
-                                    <div class="ladda-progress" style="width: 100px;"></div>
-                                </button>
+                                <div id="panel-add-server-slave">
+                                    <?php
+                                        require_once('PHP/getHTMLCode.php');
+                                        if (isset($_SESSION['auth']) && $_SESSION['auth'] == true)
+                                            echo getHTMLButtonAddServer();
+                                    ?>
+                                </div>
+
+                                
 				<div id="list-planel" class="row">
 					<!-- START Left Side (Informations Servers) -->
-
-                                        
+      
 					<?php
-						require_once('PHP/getHTMLCode.php');
 						echo getHTMLAllPanelServer();
 					?>
+                                        
+                    
 					<!--/ END Left Side -->
 				</div>
 			</div>

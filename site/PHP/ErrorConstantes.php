@@ -15,4 +15,12 @@ define('ERROR_COMPRESS_FILE', 'Error: Compress file failed');
 define('ERROR_UPLOAD_SCRIPTS', 'Error: Upload scripts failed');
 define('ERROR_SSH_SECURISE', 'Error: SSH securise script failed');
 define('ERROR_SSH_KEY_PATH_NOT_FOUND', 'Error: key SSH path not found in BDD');
+
+define('ERROR_VM_MISSING_REQUIREMENT', 'Error: no IP/name/RAM/HDD.');
+define('ERROR_VM_INVALID_REQUIREMENT', 'Error: invalid IP/name/RAM/HDD.');
+define('ERROR_VM_INVALID_NAME', 'Error: this name is already used in this server.');
+define('ERROR_VM_RAM_SIZE', 'Error: this server doesn\'t have enough RAM.');
+define('ERROR_VM_HDD_SIZE', 'Error: this server doesn\'t have enough disk space.');
+define('ERROR_VM_PROCESSING', 'Error: please wait, another vm is in process.');
+define('ERROR_VM_DESINSTALL_MISSING_REQUIREMENT', 'Error: no IP Server/IP VM.');
 ?>

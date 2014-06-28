@@ -1,6 +1,6 @@
 <?php
 
-require_once 'VMConstantes';
+require_once 'VMConstantes.php';
 
 function installVM($nameVm, $RAM, $HDDSize) {
     $output = array();

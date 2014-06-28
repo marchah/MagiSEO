@@ -17,9 +17,8 @@ class Server {
   private $_password;
   private $_keySSHPath;
 
-    function __toString()
-    {
-        return "Server{id=$this->_id, IPV4=$this->_IPV4, name=$this->_name}";
+    function __toString() {
+        return "Server{id=$this->_id, IPV4=$this->_IPV4}";
     }
 
     public function __construct($data) {
