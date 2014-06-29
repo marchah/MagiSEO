@@ -107,8 +107,7 @@ VM.deleteVM = function (VMPanel, ipServer, ipVM) {
        dataType: document.json,
        error: function (xhr) { console.log('error:', xhr.responseText);},
        success: function (str) {
-                //alert(str);
-                if (str == 1)    // pb ici, ne rentre pas dedans pourtant renvoie '1'
+                if (str == 1)
                     VMPanel.remove();
                 else
                     alert(str);

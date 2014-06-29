@@ -107,6 +107,15 @@ function getStateDesinstallVM() {
         case DESINSTALL_VM_STEP_INIT :
             $msg = "Initialisation";
             break;
+        case DESINSTALL_VM_STEP_CONNECTION_SERVER:
+            $msg = "Connection server";
+            break;
+        case DESINSTALL_VM_STEP_DESINSTALLING : 
+            $msg = "Installing VM";
+            break;
+        case DESINSTALL_VM_STEP_DELETING_VM_BDD : 
+            $msg = "Deleting informations VM";
+            break;
         case DESINSTALL_VM_STEP_DONE :
             $msg = "Desinstall Done";
             break;

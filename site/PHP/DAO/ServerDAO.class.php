@@ -49,7 +49,7 @@ class ServerDAO extends DAO {
             if (!$req->execute(array(
                             'IPV4' => $IPV4
                     ))) {
-                            ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), "", "REQUEST SQL FAILED", "ServerDAO::deletetServer()", REPORTING_TYPE_INTERNAL_ERROR, date("Y-m-d H:i:s")));
+                            ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), "", "REQUEST SQL FAILED", "ServerDAO::deleteServer()", REPORTING_TYPE_INTERNAL_ERROR, date("Y-m-d H:i:s")));
                             return false;
                     }
             return true;
@@ -126,6 +126,21 @@ class ServerDAO extends DAO {
                                                             sinfo.nb_max_proc, sinfo.nb_current_proc, sinfo.flash_max_size, sinfo.flash_current_size 
                                                             FROM server_slave sslave 
                                                             INNER JOIN server_information sinfo ON sslave.id = sinfo.idserver WHERE sslave.id='. $bdd->quote($id) .'');
+            $server = null;
+            if ($data = $reponse->fetch())
+                $server = new Server($data);
+            $reponse->closeCursor();
+            return $server;
+        }
+        
+        static function getServerByIP($ip) {
+            $bdd = parent::ConnectionBDD();
+            
+            $ret = false;
+            $reponse = $bdd->query('SELECT sslave.*, sinfo.disk_max_size, sinfo.disk_current_size, 
+                                                            sinfo.nb_max_proc, sinfo.nb_current_proc, sinfo.flash_max_size, sinfo.flash_current_size 
+                                                            FROM server_slave sslave 
+                                                            INNER JOIN server_information sinfo ON sslave.id = sinfo.idserver WHERE sslave.IPV4='. $bdd->quote($ip) .'');
             $server = null;
             if ($data = $reponse->fetch())
                 $server = new Server($data);

@@ -28,13 +28,15 @@ class VMDAO extends DAO {
         return false;
     }
 
-    static function insertVMProcessing($idServer, $ipServer) {
+    static function insertVMProcessing($idServer, $ipServer, $dateBegin, $dateEnd) {
         $bdd = parent::ConnectionBDD();
 
-        $req = $bdd->prepare('INSERT INTO vm_processing (idserver, ipserver) VALUES(:idserver, :ipserver)');
+        $req = $bdd->prepare('INSERT INTO vm_processing (idserver, ipserver, date_begin, date_end) VALUES(:idserver, :ipserver, :date_begin, :date_end)');
         if (!$req->execute(array(
                     'idserver' => $idServer,
-                    'ipserver' => $ipServer
+                    'ipserver' => $ipServer,
+                    'date_begin' => $dateBegin,
+                    'date_end' => $dateEnd
                 ))) {
             ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), "", "REQUEST SQL FAILED", "VMDAO::insertVMProcessing()", REPORTING_TYPE_INTERNAL_ERROR, date("Y-m-d H:i:s")));
             return false;
@@ -66,14 +68,14 @@ class VMDAO extends DAO {
     static function updateVMToDone($id, $idServer, $name, $RAM, $HDD) {
         $bdd = parent::ConnectionBDD();
 
-        $req = $bdd->prepare('UPDATE vm SET idserver=:idserver, name=:name, ram=:ram, hdd=:hdd, state=:state WHERE id=:id');
+        $req = $bdd->prepare('UPDATE vm SET name=:name, ram=:ram, hdd=:hdd, state=:state WHERE id=:id AND idserver=:idserver');
         if (!$req->execute(array(
-                    'idserver' => $idServer,
                     'name' => $name,
                     'ram' => $RAM,
                     'hdd' => $HDD,
                     'state' => VM_STATE_DONE,
-                    'id' => $id
+                    'id' => $id,
+                    'idserver' => $idServer
                 ))) {
             ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), "", "REQUEST SQL FAILED", "ServerDAO::updateServerBasicServer()", REPORTING_TYPE_INTERNAL_ERROR), date("Y-m-d H:i:s"));
             return false;
@@ -106,6 +108,44 @@ class VMDAO extends DAO {
         }
         $reponse->closeCursor();
         return $VM;
+    }
+    
+    static function getVMByIPServerAndIPVM($IPServer, $IPVM) {
+        $bdd = parent::ConnectionBDD();
+
+        $reponse = $bdd->query('SELECT vm.*, ss.IPV4 FROM vm vm INNER JOIN server_slave ss ON ss.id = vm.idserver WHERE vm.ip=' . $bdd->quote($IPVM). ' AND ss.IPV4=' . $bdd->quote($IPServer));
+        $VM = false;
+        if ($data = $reponse->fetch()) {
+            $VM = new VM($data['id'], $data['idserver'], $data['ip'], $data['name'], $data['ram'], $data['hdd'], $data['state']);
+            $VM->setServerIP($data['IPV4']);
+        }
+        $reponse->closeCursor();
+        return $VM;
+    }
+    
+    static function deleteVM($id) {
+            $bdd = parent::ConnectionBDD();
+
+            $req = $bdd->prepare('DELETE FROM vm WHERE id=:id');
+            if (!$req->execute(array(
+                            'id' => $id
+                    ))) {
+                            ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), "", "REQUEST SQL FAILED", "VMDAO::deleteVM()", REPORTING_TYPE_INTERNAL_ERROR, date("Y-m-d H:i:s")));
+                            return false;
+                    }
+            return true;
+        }
+    
+    static function isVMProcessingDone() {
+        $bdd = parent::ConnectionBDD();
+        $reponse = $bdd->query('SELECT date_end FROM vm_processing LIMIT 1');
+        
+        $ret = false;
+        if ($data = $reponse->fetch()) {
+            if((int)$data['date_end'])
+               $ret = true;
+        }
+        return $ret;
     }
 
 }

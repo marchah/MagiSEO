@@ -356,7 +356,7 @@ function desinstallServerSlave() {
             Cache::write(PATH_ROOT_WEBSITE . "/cache/desinstall", DESINSTALL_SERVER_STEP_ERROR);
             exit(ERROR_SSH_KEY_PATH_NOT_FOUND);
     }
-    set_time_limit(120);
+    set_time_limit(600);
     $ssh = new Net_SSH2($ipServerSSH, SSH_PORT);
     $key = new Crypt_RSA();
     $key->loadKey(file_get_contents($keySSHPath));
