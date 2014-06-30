@@ -2,7 +2,7 @@
 
 define('PATH_VM', './');
 define('PATH_ISO_OS', './Downloads/');
-define('NAME_ISO_OS', './Downloads/vm.iso');
+define('NAME_ISO_OS', 'vm.iso');
 
 /** A DELETE **/
 define('PORT', 4444);
