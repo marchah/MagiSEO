@@ -1,9 +1,6 @@
 <?php
 
-define('BDD_HOST', 'localhost');
-define('BDD_DBNAME', 'magiseo');
-define('BDD_USERNAME', 'root');
-define('BDD_PASSWORD', '');
+require_once 'BDDConstantes.php';
 
 
 define('REPORTING_TYPE_SLAVE_ERROR', 1);
@@ -25,5 +22,6 @@ define('VM_MIN_SIZE_HDD', 10000);
 
 define('VM_STATE_PROCESSING', 1);
 define('VM_STATE_DONE', 2);
+define('VM_STATE_USING', 3);
 
 ?>

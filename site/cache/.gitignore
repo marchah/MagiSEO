@@ -1,0 +1,6 @@
+# Ignorer tous les caches
+*
+# Except lui même
+!.gitignore
+# Except .htaccess
+!.htaccess

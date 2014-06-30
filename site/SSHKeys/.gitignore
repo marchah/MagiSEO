@@ -1,0 +1,6 @@
+# Ignorer tous les clé ssh
+*
+# Except lui même
+!.gitignore
+# Except .htaccess
+!.htaccess
