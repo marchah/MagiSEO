@@ -65,13 +65,15 @@ class VMDAO extends DAO {
         return false;
     }
 
-    static function updateVMToDone($id, $idServer, $name, $RAM, $HDD) {
+    static function updateVMToDone($id, $idServer, $name, $username, $password, $RAM, $HDD) {
         $bdd = parent::ConnectionBDD();
 
-        $req = $bdd->prepare('UPDATE vm SET name=:name, ram=:ram, hdd=:hdd, state=:state WHERE id=:id AND idserver=:idserver');
+        $req = $bdd->prepare('UPDATE vm SET name=:name, username=:username, password=:password, ram=:ram, hdd=:hdd, state=:state WHERE id=:id AND idserver=:idserver');
         if (!$req->execute(array(
                     'name' => $name,
                     'ram' => $RAM,
+                    'username' => $username,
+                    'password' => $password,
                     'hdd' => $HDD,
                     'state' => VM_STATE_DONE,
                     'id' => $id,
@@ -89,7 +91,7 @@ class VMDAO extends DAO {
         $reponse = $bdd->query('SELECT vm.*, ss.IPV4 FROM vm vm INNER JOIN server_slave ss ON ss.id = vm.idserver ORDER BY vm.idserver');
         $listVM = array();
         while ($data = $reponse->fetch()) {
-            $VM = new VM($data['id'], $data['idserver'], $data['ip'], $data['name'], $data['ram'], $data['hdd'], $data['state']);
+            $VM = new VM($data['id'], $data['idserver'], $data['ip'], $data['name'], $data['username'], $data['password'], $data['ram'], $data['hdd'], $data['state']);
             $VM->setServerIP($data['IPV4']);
             $listVM[] = $VM;
         }
@@ -103,7 +105,7 @@ class VMDAO extends DAO {
         $reponse = $bdd->query('SELECT vm.*, ss.IPV4 FROM vm vm INNER JOIN server_slave ss ON ss.id = vm.idserver ORDER BY vm.id DESC LIMIT 1');
         $VM;
         if ($data = $reponse->fetch()) {
-            $VM = new VM($data['id'], $data['idserver'], $data['ip'], $data['name'], $data['ram'], $data['hdd'], $data['state']);
+            $VM = new VM($data['id'], $data['idserver'], $data['ip'], $data['name'], $data['username'], $data['password'], $data['ram'], $data['hdd'], $data['state']);
             $VM->setServerIP($data['IPV4']);
         }
         $reponse->closeCursor();
@@ -116,7 +118,7 @@ class VMDAO extends DAO {
         $reponse = $bdd->query('SELECT vm.*, ss.IPV4 FROM vm vm INNER JOIN server_slave ss ON ss.id = vm.idserver WHERE vm.ip=' . $bdd->quote($IPVM). ' AND ss.IPV4=' . $bdd->quote($IPServer));
         $VM = false;
         if ($data = $reponse->fetch()) {
-            $VM = new VM($data['id'], $data['idserver'], $data['ip'], $data['name'], $data['ram'], $data['hdd'], $data['state']);
+            $VM = new VM($data['id'], $data['idserver'], $data['ip'], $data['name'], $data['username'], $data['password'], $data['ram'], $data['hdd'], $data['state']);
             $VM->setServerIP($data['IPV4']);
         }
         $reponse->closeCursor();

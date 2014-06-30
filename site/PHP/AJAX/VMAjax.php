@@ -99,7 +99,7 @@ function installVM() {
     // do a long sleep and like 2 test before do a error report
     $idVM = VMDAO::getIdVMInProcess();
     //echo $idVM . " " . $Server->getId();
-    VMDAO::updateVMToDone($idVM, $Server->getId(), $name, $RAM, $HDD);
+    VMDAO::updateVMToDone($idVM, $Server->getId(), $name, 'marcha', 'totoauzoo', $RAM, $HDD);
     VMDAO::deleteVMProcessing();
     Cache::write(PATH_ROOT_WEBSITE . "/cache/installVM", INSTALL_VM_STEP_DONE);
     echo true;
