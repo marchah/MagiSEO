@@ -1,2 +1,4 @@
 # Ignorer le .htpasswd
 .htpasswd
+# Ignorer le .htaccess
+.htaccess

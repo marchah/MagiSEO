@@ -6,7 +6,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/Object/User.class.ph
 class UserDAO extends DAO {
     static function authentification($login, $password) {
         $bdd = parent::ConnectionBDD();
-        $reponse = $bdd->query("SELECT * FROM user WHERE login='$login' AND password=PASSWORD('$password'))");
+        $reponse = $bdd->query("SELECT * FROM user WHERE login=".$bdd->quote($login)." AND password=PASSWORD(".$bdd->quote($password).")");
 	if ($data = $reponse->fetch()) {
             $bdd->exec("UPDATE user SET date_last_connection = NOW() WHERE id=" . $data['id']);
             return new User($data['id'], $data['login'], $password, $data['firstname'], $data['lastname'], $data['email'], $data['avatar_path'], $data['date_last_connection']);
