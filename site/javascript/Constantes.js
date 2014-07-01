@@ -1,4 +1,4 @@
-var urlServer = "http://127.0.0.1:/MagiSEO/site/";
+var urlServer = "http://5.135.163.236/MagiSEO/site/";
 var ajaxFolderPath = "PHP/AJAX/";
 
 /*** VM Constantes ***/

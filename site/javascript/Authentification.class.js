@@ -6,7 +6,7 @@ Authentification.authentification = function(userLogin, userPassword) {
 	   url: urlServer + ajaxFolderPath + "authentificationAjax.php",
 	   data:{nameRequest: "authentification", login: userLogin, password: userPassword},
 	   dataType: document.json,
-	   error: function (xhr) { if (xhr.status == 404) authFailed("Incorrect login/password"); else console.log('error:', xhr.responseText); $("#img_loading_auth").css('display', 'none');},
+	   error: function (xhr) { if (xhr.status == 404) authFailed("Incorrect login/password"); console.log('error:', xhr.responseText); $("#img_loading_auth").css('display', 'none');},
 	   success: function (isAuth) {
 			if (isAuth == true)
 				authSucces();

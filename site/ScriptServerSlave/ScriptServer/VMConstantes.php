@@ -1,7 +1,7 @@
 <?php
 
 define('PATH_VM', './');
-define('PATH_ISO_OS', './Downloads/');
+define('PATH_ISO_OS', '/home/');
 define('NAME_ISO_OS', 'vm.iso');
 
 /** A DELETE **/
