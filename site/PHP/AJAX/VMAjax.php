@@ -8,17 +8,22 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/Tools.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/SSHConstances.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/ErrorConstantes.php';
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHPseclib/Net/SSH2.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHPseclib/Crypt/RSA.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHPseclib/Net/SFTP.php';
+//require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHPseclib/Math/BigInteger.php';
+//require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHPseclib/Net/SSH2.php';
+//require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHPseclib/Crypt/RSA.php';
+//require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHPseclib/Net/SFTP.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/Object/Cache.class.php';
 
-header("Content-Type: text/plain");
+include('Crypt/RSA.php');
+include('Net/SSH2.php');
+include('Net/SFTP.php');
 
+header("Content-Type: text/plain");
+/*
 if (!set_include_path(get_include_path() . PATH_SEPARATOR . $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/phpseclib')) {
     ReportDAO::insertReport(new Report(0, !Tools::IsAuth() ? 0 : $_SESSION['user']->getId(), !Tools::IsAuth() ? "" : $_SESSION['user']->getLogin(), "Internal Error", "set_include_path() failed on serverAjax.php", REPORTING_TYPE_INTERNAL_ERROR, date("Y-m-d H:i:s")));
     exit(ERROR_SYSTEM);
-}
+}*/
 	
 set_error_handler('errorHandler', E_USER_NOTICE);
 

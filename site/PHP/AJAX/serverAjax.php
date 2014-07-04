@@ -1,4 +1,7 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 'On');
+
 require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/Object/User.class.php';
 @session_start();
 require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/DAO/ServerDAO.class.php';
@@ -6,18 +9,22 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/DAO/ReportDAO.class.
 require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/Tools.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/SSHConstances.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/ErrorConstantes.php';
-
-require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHPseclib/Net/SSH2.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHPseclib/Crypt/RSA.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHPseclib/Net/SFTP.php';
+//require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHPseclib/Math/BigInteger.php';
+//require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHPseclib/Net/SSH2.php';
+//require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHPseclib/Crypt/RSA.php';
+//require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHPseclib/Net/SFTP.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/Object/Cache.class.php';
+
+include('Crypt/RSA.php');
+include('Net/SSH2.php');
+include('Net/SFTP.php');
 
 header("Content-Type: text/plain");
 
-if (!set_include_path(get_include_path() . PATH_SEPARATOR . $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/phpseclib')) {
+/*if (!set_include_path(get_include_path() . PATH_SEPARATOR . $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/phpseclib')) {
     ReportDAO::insertReport(new Report(0, !Tools::IsAuth() ? 0 : $_SESSION['user']->getId(), !Tools::IsAuth() ? "" : $_SESSION['user']->getLogin(), "Internal Error", "set_include_path() failed on serverAjax.php", REPORTING_TYPE_INTERNAL_ERROR, date("Y-m-d H:i:s")));
     exit(ERROR_SYSTEM);
-}
+}*/
 	
 set_error_handler('errorHandler', E_USER_NOTICE);
 
@@ -26,6 +33,7 @@ function errorHandler($errno, $errstr, $errfile, $errline) {
     cleanInstallFolder();
     exit(ERROR_SSH_SYSTEM);
 }
+
 /*
 function installServer() {
 
@@ -272,6 +280,7 @@ function cleanInstallFolder() {
 }
 
 function installServerSlave() {
+
     $ipServerSSH = (isset($_POST["ipServerSSH"])) ? $_POST["ipServerSSH"] : "";
     $login = (isset($_POST["login"])) ? $_POST["login"] : "";
     $password = (isset($_POST["password"])) ? $_POST["password"] : "";
@@ -286,7 +295,7 @@ function installServerSlave() {
         exit(ERROR_SSH_SERVER_ALREADY_CONFIGURATED);
     }
     set_time_limit(600);
-    
+
     if (!file_exists(PATH_ROOT_WEBSITE . PATH_MASTER_SCRIPT_SERVER_SLAVE_TO_UPLOAD))
         mkdir(PATH_ROOT_WEBSITE . PATH_MASTER_SCRIPT_SERVER_SLAVE_TO_UPLOAD);
     Cache::write(PATH_ROOT_WEBSITE . "/cache/install", INSTALL_SERVER_STEP_GENERATE_KEY);

@@ -7,5 +7,6 @@ su -c "/usr/sbin/delgroup sshusers";
 su -c "rm -rf ~/.ssh";
 su -c "mv /etc/ssh/sshd_config.save /etc/ssh/sshd_config";
 su -c "/etc/init.d/ssh restart";
+su -c "service ssh restart";
 
 rm -r ScriptServer;
