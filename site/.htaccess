@@ -1,4 +1,4 @@
 AuthName "Secure Administrations' Page"
 AuthType Basic
-AuthUserFile "/var/www/html/MagiSEO/site/.htpasswd"
+AuthUserFile "C:/wamp/www/MagiSEO/site/.htpasswd"
 Require valid-user

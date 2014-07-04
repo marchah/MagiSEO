@@ -28,7 +28,7 @@ function securiseSSHServerSlave() {
                     ."sed -i 's/^[#]*UsePAM [a-zA-Z][a-zA-Z]*$/UsePAM no/' ".PATH_FILE_CONFIG_SSH."; "
                     ."sed -i 's/^[#]*KerberosAuthentication [a-zA-Z][a-zA-Z]*$/KerberosAuthentication no/' ".PATH_FILE_CONFIG_SSH."; "
                     ."sed -i 's/^[#]*GSSAPIAuthentication [a-zA-Z][a-zA-Z]*$/GSSAPIAuthentication no/' ".PATH_FILE_CONFIG_SSH."; "
-                    ."sed -i 's/^[#]*PasswordAuthentication [a-zA-Z][a-zA-Z]*$/PasswordAuthentication no/' ".PATH_FILE_CONFIG_SSH."; " // DOESN'T WORK ON UBUNTU
+                    ."sed -i 's/^[#]*PasswordAuthentication [a-zA-Z][a-zA-Z]*$/PasswordAuthentication no/' ".PATH_FILE_CONFIG_SSH."; "
                     ."sed -i 's/^[#]*MaxStartups [0-9:][0-9:]*$/MaxStartups ".MAX_STARTUPS."/' ".PATH_FILE_CONFIG_SSH."; "
                     ."sed -i 's/^[#]*PubkeyAuthentication [a-zA-Z][a-zA-Z]*$/PubkeyAuthentication yes/' ".PATH_FILE_CONFIG_SSH."; "
                     ."sed -i 's/^[#]*AuthorizedKeysFile.*$/AuthorizedKeysFile ".str_replace("/", "\/", PATH_FILE_AUTHORIZED_KEYS)."/' ".PATH_FILE_CONFIG_SSH."; "
