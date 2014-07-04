@@ -109,14 +109,14 @@ function getHTMLPanelServer($server) {
 								<div class="col-sm-9">
 									<p class="form-control-static">'. $server->getDiskCurrentSize() .'/'. $server->getDiskMaxSize() .'</p>
 								</div>
-							</div>
-							<div class="form-group">
+							</div>'.
+							/*<div class="form-group">
 								<label class="col-sm-3 control-label">Proc Using</label>
 								<div class="col-sm-9">
 									<p class="form-control-static">'. $server->getNbCurrentProc() .'/'. $server->getNbMaxProc() .'</p>
 								</div>
-							</div>
-							<div class="form-group">
+							</div>*/
+							'<div class="form-group">
 								<label class="col-sm-3 control-label">Flash Using</label>
 								<div class="col-sm-9">
 									<p class="form-control-static">'. $server->getFlashCurrentSize() .'/'. $server->getFlashMaxSize() .'</p>

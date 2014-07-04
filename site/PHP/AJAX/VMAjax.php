@@ -141,7 +141,7 @@ function desinstallVM() {
     Cache::write(PATH_ROOT_WEBSITE . "/cache/desinstallVM", DESINSTALL_VM_STEP_DELETING_VM_BDD);
     VMDAO::deleteVM($VM->getId());
     Cache::write(PATH_ROOT_WEBSITE . "/cache/desinstallVM", DESINSTALL_VM_STEP_DONE);
-    ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), $_SESSION['user']->getLogin(), "Desinstall VM On Server $Server->getIPV4()", "Success", REPORTING_TYPE_LOG, date("Y-m-d H:i:s")));
+    ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), $_SESSION['user']->getLogin(), "Desinstall VM On Server ".$Server->getIPV4(), "Success", REPORTING_TYPE_LOG, date("Y-m-d H:i:s")));
     echo true;
 }
 

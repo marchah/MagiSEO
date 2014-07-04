@@ -4,6 +4,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/Object/User.class.ph
 require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/DAO/DAO.class.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/Object/Server.class.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/DAO/ReportDAO.class.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/DAO/VMDAO.class.php';
 
 class ServerDAO extends DAO {
 	
@@ -72,14 +73,11 @@ class ServerDAO extends DAO {
 		return true;
         }
         
+        
+        
         static function getListSlaveServer() {
             $bdd = parent::ConnectionBDD();
 	
-            /*$reponse = $bdd->query('SELECT sslave.*, sstate.state, sstate.on_off, sinfo.disk_max_size, sinfo.disk_current_size, 
-                                                            sinfo.nb_max_proc, sinfo.nb_current_proc, sinfo.flash_max_size, sinfo.flash_current_size 
-                                                            FROM server_slave sslave 
-                                                            INNER JOIN server_state sstate ON sslave.id = sstate.id 
-                                                            INNER JOIN server_information sinfo ON sslave.id = sinfo.idserver');*/
             $reponse = $bdd->query('SELECT sslave.*, sinfo.disk_max_size, sinfo.disk_current_size, 
                                                             sinfo.nb_max_proc, sinfo.nb_current_proc, sinfo.flash_max_size, sinfo.flash_current_size 
                                                             FROM server_slave sslave 
@@ -90,6 +88,9 @@ class ServerDAO extends DAO {
                     $listServer[] = $server;	
             }
             $reponse->closeCursor();
+            foreach ($listServer as $server) {
+                $server->setFlashCurrentSize(VMDAO::getVMsRamUsedByIdServer($server->getId()) + $server->getFlashCurrentSize());
+            }
             return $listServer;
         }
         
@@ -130,6 +131,7 @@ class ServerDAO extends DAO {
             if ($data = $reponse->fetch())
                 $server = new Server($data);
             $reponse->closeCursor();
+            $server->setFlashCurrentSize(VMDAO::getVMsRamUsedByIdServer($server->getId()) + $server->getFlashCurrentSize());
             return $server;
         }
         
@@ -145,6 +147,7 @@ class ServerDAO extends DAO {
             if ($data = $reponse->fetch())
                 $server = new Server($data);
             $reponse->closeCursor();
+            $server->setFlashCurrentSize(VMDAO::getVMsRamUsedByIdServer($server->getId()) + $server->getFlashCurrentSize());
             return $server;
         }
         

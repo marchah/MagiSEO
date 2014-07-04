@@ -4,16 +4,16 @@ require_once 'Constantes.php';
 class ServerInfo {
     private $_sizeDiskCurrentMB;
     private $_sizeDiskTotalMB;
-    private $_sizeRAMCurrentKB;
-    private $_sizeRAMTotalKB;
+    private $_sizeRAMCurrentMB;
+    private $_sizeRAMTotalMB;
     private $_nbCPUTotal;
     private $_nbCPUUsed;
     
     public function __construct() {
         $this->_sizeDiskCurrentMB = 0;
         $this->_sizeDiskTotalMB = 0;
-        $this->_sizeRAMCurrentKB = 0;
-        $this->_sizeRAMTotalKB = 0;
+        $this->_sizeRAMCurrentMB = 0;
+        $this->_sizeRAMTotalMB = 0;
         $this->_nbCPUTotal = 0;
         $this->_nbCPUUsed = 0;
     }
@@ -26,15 +26,15 @@ class ServerInfo {
         $this->_sizeDiskTotalMB = ($sizeDiskTotalByte === false) ? 0 : intval($sizeDiskTotalByte / pow(1024,2));
     }
     
-    private function setSizeRAMKB() {      
-        $sizeRAMFreeKB = exec("cat /proc/meminfo | grep MemFree");
-        $sizeRAMTotalKB = exec("cat /proc/meminfo | grep MemTotal");
+    private function setSizeRAMMB() {      
+        $sizeRAMFreeMB = exec("cat /proc/meminfo | grep MemFree");
+        $sizeRAMTotalMB = exec("cat /proc/meminfo | grep MemTotal");
 
-        preg_match_all('#[0-9]+#', $sizeRAMTotalKB, $RAMTotal);
-        preg_match_all('#[0-9]+#', $sizeRAMFreeKB, $RAMFree);
+        preg_match_all('#[0-9]+#', $sizeRAMTotalMB, $RAMTotal);
+        preg_match_all('#[0-9]+#', $sizeRAMFreeMB, $RAMFree);
 
-        $this->_sizeRAMTotalKB = empty($sizeRAMTotalKB) ? 0 : intval($RAMTotal[0][0]);
-        $this->_sizeRAMCurrentKB = (empty($sizeRAMFreeKB) || empty($sizeRAMTotalKB)) ? 0 : $this->_sizeRAMTotalKB - intval($RAMFree[0][0]);
+        $this->_sizeRAMTotalMB = empty($sizeRAMTotalMB) ? 0 : intval(intval($RAMTotal[0][0]) / pow(1024,1));
+        $this->_sizeRAMCurrentMB = (empty($sizeRAMFreeMB) || empty($sizeRAMTotalMB)) ? 0 : intval($this->_sizeRAMTotalMB - (intval($RAMFree[0][0])) / pow(1024,1));
     }
     
     private function setNbCPUTotal() {
@@ -69,13 +69,13 @@ class ServerInfo {
 
     public function setInfo() {
         $this->setSizeDiskMB();
-        $this->setSizeRAMKB();
+        $this->setSizeRAMMB();
         $this->setNbCPUTotal();
         $this->setNbCPUUsed();
     }
     
     public function getInfo() {
-        return MSG_DELIMITER . "$this->_sizeDiskCurrentMB/$this->_sizeDiskTotalMB/$this->_sizeRAMCurrentKB/$this->_sizeRAMTotalKB/$this->_nbCPUUsed/$this->_nbCPUTotal" . MSG_DELIMITER;
+        return MSG_DELIMITER . "$this->_sizeDiskCurrentMB/$this->_sizeDiskTotalMB/$this->_sizeRAMCurrentMB/$this->_sizeRAMTotalMB/$this->_nbCPUUsed/$this->_nbCPUTotal" . MSG_DELIMITER;
     }
     
     /*private function insertInfo($bdd, $idServer) {
@@ -86,8 +86,8 @@ class ServerInfo {
                         'disk_current_size' => $this->_sizeDiskCurrentMB,
                         'nb_max_proc' => $this->_nbCPUTotal,
                         'nb_current_proc' => $this->_nbCPUUsed,
-                        'flash_max_size' => $this->_sizeRAMTotalKB,
-                        'flash_current_size' => $this->_sizeRAMCurrentKB
+                        'flash_max_size' => $this->_sizeRAMTotalMB,
+                        'flash_current_size' => $this->_sizeRAMCurrentMB
 
                 ))) {
                         insertReport("REQUEST SQL FAILED", "ServerDAO::insertInfo()", REPORTING_TYPE_INTERNAL_ERROR);
@@ -103,8 +103,8 @@ class ServerInfo {
                         'disk_current_size' => $this->_sizeDiskCurrentMB,
                         'nb_max_proc' => $this->_nbCPUTotal,
                         'nb_current_proc' => $this->_nbCPUUsed,
-                        'flash_max_size' => $this->_sizeRAMTotalKB,
-                        'flash_current_size' => $this->_sizeRAMCurrentKB,
+                        'flash_max_size' => $this->_sizeRAMTotalMB,
+                        'flash_current_size' => $this->_sizeRAMCurrentMB,
                         'idserver' => $idServer
 		))) {
                         insertReport("REQUEST SQL FAILED", "ServerInfo::updateInfo()", REPORTING_TYPE_INTERNAL_ERROR);
@@ -144,7 +144,7 @@ class ServerInfo {
     }*/
     
     public function __toString() {
-        return "ServerInfo {sizeDiskCurrentMB=$this->_sizeDiskCurrentMB, sizeDiskTotalMB=$this->_sizeDiskTotalMB, sizeRAMCurrentKB=$this->_sizeRAMCurrentKB, sizeRAMTotalKB=$this->_sizeRAMTotalKB, nbCPUTotal=$this->_nbCPUTotal, nbCPUUsed=$this->_nbCPUUsed}";
+        return "ServerInfo {sizeDiskCurrentMB=$this->_sizeDiskCurrentMB, sizeDiskTotalMB=$this->_sizeDiskTotalMB, sizeRAMCurrentMB=$this->_sizeRAMCurrentMB, sizeRAMTotalMB=$this->_sizeRAMTotalMB, nbCPUTotal=$this->_nbCPUTotal, nbCPUUsed=$this->_nbCPUUsed}";
     }
 }
 

@@ -149,5 +149,16 @@ class VMDAO extends DAO {
         }
         return $ret;
     }
+    
+    static function getVMsRamUsedByIdServer($idServer) {
+            $bdd = parent::ConnectionBDD();
+	
+            $totalRAM = 0;
+            $reponse = $bdd->query('SELECT COALESCE(SUM(ram), 0) AS \'TotalRAM\' FROM vm WHERE idserver=' . $bdd->quote($idServer));
+            if ($data = $reponse->fetch())
+                $totalRAM = $data['TotalRAM'];
+            $reponse->closeCursor();
+            return $totalRAM;
+        }
 
 }

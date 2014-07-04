@@ -344,8 +344,8 @@ function installServerSlave() {
     $ret = $ssh->read('/.*@.*[$|#]/', NET_SSH2_READ_REGEX);
     //echo $ret . "\n";
     $ssh->write("./ScriptServer/installSoftware.sh\n");
-    Cache::write(PATH_ROOT_WEBSITE . "/cache/install", INSTALL_SERVER_STEP_SECURING_SSH);
     $rett = $ssh->read('/.*@.*[$|#]/', NET_SSH2_READ_REGEX);
+    Cache::write(PATH_ROOT_WEBSITE . "/cache/install", INSTALL_SERVER_STEP_SECURING_SSH);
     //echo "test0:" . $rett . "\n";
     $ssh->write("php ./ScriptServer/securiseSSHServerSlave.php\n");
     $ret = $ssh->read('/.*@.*[$|#]/', NET_SSH2_READ_REGEX);
