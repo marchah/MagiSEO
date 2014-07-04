@@ -33,7 +33,8 @@ function securiseSSHServerSlave() {
                     ."sed -i 's/^[#]*PubkeyAuthentication [a-zA-Z][a-zA-Z]*$/PubkeyAuthentication yes/' ".PATH_FILE_CONFIG_SSH."; "
                     ."sed -i 's/^[#]*AuthorizedKeysFile.*$/AuthorizedKeysFile ".str_replace("/", "\/", PATH_FILE_AUTHORIZED_KEYS)."/' ".PATH_FILE_CONFIG_SSH."; "
                     ." echo AllowGroups ".GROUP_SSH_ALLOW." >> ".PATH_FILE_CONFIG_SSH."; "
-                    ."/etc/init.d/ssh restart"
+                    ."/etc/init.d/ssh restart;"
+                    ."service ssh restart"
                 . "\"; "
         , $output, $return_val);
     echo $return_val . "\n";

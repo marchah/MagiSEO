@@ -89,7 +89,7 @@ function installVM() {
     VMDAO::insertVMProcessing($Server->getId(), $Server->getIPV4(), date("Y-m-d H:i:s"), 0);
     
     $ssh->read('/.*@.*[$|#]/', NET_SSH2_READ_REGEX);
-    $ssh->write("su -c \"php ScriptServer/installVM.php ".$name." ".$RAM." ".$HDD."\"\n");
+    $ssh->write("su -c \"php ScriptServer/installVMNew.php ".$name." ".$RAM." ".$HDD."\"\n");
     set_time_limit(2000);
     
     while (!VMDAO::isVMProcessingDone()) {
@@ -102,6 +102,7 @@ function installVM() {
     VMDAO::updateVMToDone($idVM, $Server->getId(), $name, 'marcha', 'totoauzoo', $RAM, $HDD);
     VMDAO::deleteVMProcessing();
     Cache::write(PATH_ROOT_WEBSITE . "/cache/installVM", INSTALL_VM_STEP_DONE);
+    ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), $_SESSION['user']->getLogin(), "Install VM On Server ".$Server->getIPV4(), "Success", REPORTING_TYPE_LOG, date("Y-m-d H:i:s")));
     echo true;
 }
 
@@ -135,6 +136,7 @@ function desinstallVM() {
     Cache::write(PATH_ROOT_WEBSITE . "/cache/desinstallVM", DESINSTALL_VM_STEP_DELETING_VM_BDD);
     VMDAO::deleteVM($VM->getId());
     Cache::write(PATH_ROOT_WEBSITE . "/cache/desinstallVM", DESINSTALL_VM_STEP_DONE);
+    ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), $_SESSION['user']->getLogin(), "Desinstall VM On Server $Server->getIPV4()", "Success", REPORTING_TYPE_LOG, date("Y-m-d H:i:s")));
     echo true;
 }
 
