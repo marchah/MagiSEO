@@ -54,6 +54,30 @@ VM.progressDesinstall = function () {
     });
 }
 
+VM.progressUpdate = function () {
+    $("#progress-bar-container-vm").css("display", "block");
+    $.ajax({
+       type: "POST",
+       url: urlServer + ajaxFolderPath + "progressAjax.php",
+       data:{nameRequest: "getStateUpdateVM"},
+       dataType: document.json,
+       error: function (xhr) { console.log('error:', xhr.responseText);},
+       success: function (step) {
+                var result = step.split('/');
+                
+                var current = parseInt(result[0]) + 1;
+                var msg = result[1];
+                var max = parseInt(result[2]) + 1;
+                
+                if (current >= 0) { 
+                    var maxSize = parseInt($("#progress-bar-container-vm").css("width"));
+                    $("#progress-bar-vm").css("width", maxSize / max * current + "px");
+                }
+                $("#state-vm").text(msg);
+            }
+    });
+}
+
 VM.displayNewPanelVM = function () {
     $.ajax({
        type: "POST",
@@ -67,7 +91,7 @@ VM.displayNewPanelVM = function () {
         }
     });
 }
-// Add non secure une install ou desinstall est en cours deja
+
 VM.addVM = function (idServer, name, RAM, HDD) {
     if ($("#progress-bar-container-vm").css("display") != "none") {
         alert("... Please Wait The End Of The Current Process ...");
@@ -120,16 +144,54 @@ VM.deleteVM = function (VMPanel, ipServer, ipVM) {
     });
 }
 
+VM.updateVM = function (ipServer, ipVM) {
+    if ($("#progress-bar-container-vm").css("display") != "none") {
+        alert("... Please Wait The End Of The Current Process ...");
+        return ;
+    }
+    var x = setInterval(VM.progressUpdate, 2000);
+    $.ajax({
+       type: "POST",
+       url: urlServer + ajaxFolderPath + "VMAjax.php",
+       data:{nameRequest: "updateVM", ipServer: ipServer, ipVM: ipVM},
+       dataType: document.json,
+       error: function (xhr) { console.log('error:', xhr.responseText);},
+       success: function (str) {
+                if (str != 1)
+                    alert(str);
+        },
+        complete : function() {
+            clearInterval(x);
+            VM.progressUpdate();
+            setTimeout(VM.hideProgressBar, 6000);
+        }
+    });
+}
+
 var attachEventOnButtonsManageVM = function() {
     $('.remove-vm').click(function(){
-        
         var VMPanel = $(this).parents(".server-panel");
-        //alert("delete VM ipServer:" + (VMPanel.find(".panel-title").text()).split(': ')[1] + ", ipVM:" + VMPanel.find(".vm-ip").text());
         VM.deleteVM(VMPanel, (VMPanel.find(".panel-title").text()).split(': ')[1], VMPanel.find(".vm-ip").text()); 
     });
+    $('.update-vm').click(function(){
+        var VMPanel = $(this).parents(".server-panel");
+        VM.updateVM((VMPanel.find(".panel-title").text()).split(': ')[1], VMPanel.find(".vm-ip").text()); 
+    });
 };
-
 attachEventOnButtonsManageVM();
+
+var attachEventOnButtonAddVM = function () {
+    $('#add-vm').click(function() {
+        if ($("#progress-bar-container-vm").css("display") != "none") {
+            alert("... Please Wait The End Of The Current Process ...");
+            return ;
+        }
+        $("#add-vm-failed").text('');
+        $("#add-vm-failed").css('display', 'none');
+        $('#AddVMModal').modal();
+    });
+};
+attachEventOnButtonAddVM();
 
 VM.displayButtonsManageVM = function () {
     $.ajax({
@@ -146,20 +208,6 @@ VM.displayButtonsManageVM = function () {
 		}
 	});
 };
-
-var attachEventOnButtonAddVM = function () {
-    $('#add-vm').click(function() {
-        if ($("#progress-bar-container-vm").css("display") != "none") {
-            alert("... Please Wait The End Of The Current Process ...");
-            return ;
-        }
-        $("#add-vm-failed").text('');
-        $("#add-vm-failed").css('display', 'none');
-        $('#AddVMModal').modal();
-    });
-};
-
-attachEventOnButtonAddVM();
 
 VM.displayButtonAddVM = function () {
         $.ajax({

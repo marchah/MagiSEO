@@ -50,13 +50,13 @@ function getHTMLButtonsManageServer() {
                             </button>
                             <ul class="dropdown-menu pull-right">
                                 <li>
-                                    <a href="javascript:void(0);">
+                                    <a class="update-server" href="#">
                                         Update
                                     </a>
                                 </li>
                                 <li class="divider"></li>
                                 <li>
-                                    <a class="text-danger remove-server" href="#");">
+                                    <a class="text-danger remove-server" href="#">
                                         Delete
                                     </a>
                                 </li>
@@ -166,13 +166,13 @@ function getHTMLButtonsManageVM() {
                             </button>
                             <ul class="dropdown-menu pull-right">
                                 <li>
-                                    <a href="javascript:void(0);">
+                                    <a class="update-vm" href="#">
                                         Update
                                     </a>
                                 </li>
                                 <li class="divider"></li>
                                 <li>
-                                    <a class="text-danger remove-vm" href="#");">
+                                    <a class="text-danger remove-vm" href="#">
                                         Delete
                                     </a>
                                 </li>
@@ -261,8 +261,91 @@ function getHTMLAllPanelVM() {
     return $HTMLAllPanelVM;
 }
 
+function getHTMLPanelRunningVM($VM) {
+    return '<div class="col-md-4 server-panel">
+			<!-- START panel -->
+			<div class="panel panel-default">
+				<!-- panel heading/header -->
+				<div class="panel-heading">
+					<h3 class="panel-title">Server: '. $VM->getServerIP() .'</h3>
+					<!-- panel toolbar -->
+					<div class="panel-toolbar text-right panel-toolbar-vm">
+						<!-- option -->
+						<div class="option">
+							<button class="btn up" data-toggle="panelcollapse"><i class="arrow"></i></button>
+						</div>
+						<!--/ option -->
+					</div>
+					<!--/ panel toolbar -->
+				</div>
+				<!--/ panel heading/header -->
+				
+				<!-- panel body with collapse capable -->
+				<div style="" class="panel-collapse in pull out">
+					<div class="panel-body">
+						<div class="form-horizontal form-bordered">
+							<div class="form-group">
+								<label class="col-sm-3 control-label">IPV4</label>
+								<div class="col-sm-9">
+									<p class="form-control-static vm-ip">'. $VM->getIP() .'</p>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label class="col-sm-3 control-label">Name</label>
+								<div class="col-sm-9">
+									<p class="form-control-static">'. $VM->getName() .'</p>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">Disk Size</label>
+								<div class="col-sm-9">
+									<p class="form-control-static">'. $VM->getHDD() .'</p>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">RAM Size</label>
+								<div class="col-sm-9">
+									<p class="form-control-static">'. $VM->getRAM() .'</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--/ panel body with collapse capabale -->
+
+				<!-- Loading indicator -->
+				<div class="indicator"><span class="spinner"></span></div>
+				<!--/ Loading indicator -->
+			</div>
+			<!--/ END panel -->
+		</div>';
+}
+
+function getHTMLAllPanelRunningVM() {
+    $listRunningVM = VMDAO::getListVMByState(VM_STATE_USING);
+
+    $HTMLPanelRunningVM = "";
+    foreach($listRunningVM as $VM) {
+        $HTMLPanelRunningVM .= getHTMLPanelRunningVM($VM);
+    }
+    return $HTMLPanelRunningVM;
+}
+
 function getHTMLPanelNewVM() {
     return getHTMLPanelVM(VMDAO::getNewVM());
+}
+
+function getHTMLButtonLaunchAlgoOnVM() {
+      if (isset($_SESSION['auth']) && $_SESSION['auth'] == true)
+		return '<button id="launch-algo-vm" class="btn btn-info ladda-button ladda-progress mb5" data-style="expand-right">'
+                            .'<span class="ladda-label">Launch Algo On VM</span>'
+                            .'<span class="ladda-spinner"></span>'
+                            .'<span class="ladda-spinner"></span>'
+                            .'<div class="ladda-progress" style="width: 100px;"></div>'
+                        .'</button>';
+	http_response_code(401);
+	return false;  
 }
 
 function getHTMLButtonAddVM() {

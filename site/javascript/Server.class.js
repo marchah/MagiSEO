@@ -20,35 +20,6 @@ Server.hideProgressBar = function () {
     $("#progress-bar-container-server").css("display", "none");
 }
 
-Server.addSlaveServer = function (ipv4, login, password) {
-    if ($("#progress-bar-container-server").css("display") != "none") {
-        alert("... Please Wait The End Of The Current Process ...");
-        return ;
-    }
-    var x = setInterval(Server.progressInstall, 2000);
-    $.ajax({
-       type: "POST",
-       url: urlServer + ajaxFolderPath + "serverAjax.php",
-       data:{nameRequest: "installServer", ipServerSSH: ipv4, login: login, password: password},
-       dataType: document.json,
-       /*beforeSend: function () {
-           Server.progressInstall();
-       },*/
-       error: function (xhr) { console.log('error:', xhr.responseText);},
-       success: function (str) {
-            if (str == true) 
-                setTimeout(Server.displayNewPanelServer, 5000); // très moche PK????
-            else
-                alert(str);
-        },
-        complete : function() {
-            clearInterval(x);
-            Server.progressInstall();
-            setTimeout(Server.hideProgressBar, 6000);
-        }
-    });
-}
-
 Server.progressInstall = function () {
     $("#progress-bar-container-server").css("display", "block");
     $.ajax({
@@ -82,7 +53,6 @@ Server.progressDesinstall = function () {
        dataType: document.json,
        error: function (xhr) { console.log('error:', xhr.responseText);},
        success: function (step) {
-                //alert(step);
                 var result = step.split('/');
                 
                 var current = parseInt(result[0]) + 1;
@@ -95,6 +65,56 @@ Server.progressDesinstall = function () {
                 }
                 $("#state-server-slave").text(msg);
             }
+    });
+}
+
+Server.progressUpdate = function () {
+    $("#progress-bar-container-server").css("display", "block");
+    $.ajax({
+       type: "POST",
+       url: urlServer + ajaxFolderPath + "progressAjax.php",
+       data:{nameRequest: "getStateUpdateServer"},
+       dataType: document.json,
+       error: function (xhr) { console.log('error:', xhr.responseText);},
+       success: function (step) {
+                var result = step.split('/');
+                
+                var current = parseInt(result[0]) + 1;
+                var msg = result[1];
+                var max = parseInt(result[2]) + 1;
+                
+                if (current >= 0) { 
+                    var maxSize = parseInt($("#progress-bar-container-server").css("width"));
+                    $("#progress-bar-server-slave").css("width", maxSize / max * current + "px");
+                }
+                $("#state-server-slave").text(msg);
+            }
+    });
+}
+
+Server.addSlaveServer = function (ipv4, login, password) {
+    if ($("#progress-bar-container-server").css("display") != "none") {
+        alert("... Please Wait The End Of The Current Process ...");
+        return ;
+    }
+    var x = setInterval(Server.progressInstall, 2000);
+    $.ajax({
+       type: "POST",
+       url: urlServer + ajaxFolderPath + "serverAjax.php",
+       data:{nameRequest: "installServer", ipServerSSH: ipv4, login: login, password: password},
+       dataType: document.json,
+       error: function (xhr) { console.log('error:', xhr.responseText);},
+       success: function (str) {
+            if (str == true) 
+                setTimeout(Server.displayNewPanelServer, 5000); // très moche PK????
+            else
+                alert(str);
+        },
+        complete : function() {
+            clearInterval(x);
+            Server.progressInstall();
+            setTimeout(Server.hideProgressBar, 6000);
+        }
     });
 }
 
@@ -124,19 +144,54 @@ Server.deleteSlaveServer = function (serverPanel, ipServerSSH, login) {
     });
 }
 
-/*$(".remove-server").click(function () {
-    var serverPanel = $(this).parents(".server-panel");
-    Server.deleteSlaveServer(serverPanel, serverPanel.find(".server-ip").text(), serverPanel.find(".server-username").text());    
-});*/
+Server.updateSlaveServer = function (ipServerSSH, login) {
+    if ($("#progress-bar-container-server").css("display") != "none") {
+        alert("... Please Wait The End Of The Current Process ...");
+        return ;
+    }
+    var x = setInterval(Server.progressUpdate, 2000);
+    $.ajax({
+       type: "POST",
+       url: urlServer + ajaxFolderPath + "serverAjax.php",
+       data:{nameRequest: "updateServer", ipServerSSH: ipServerSSH, login: login},
+       dataType: document.json,
+       error: function (xhr) { console.log('error:', xhr.responseText);},
+       success: function (str) {
+                if (str != 1)
+                    alert(str);
+        },
+        complete : function() {
+            clearInterval(x);
+            Server.progressUpdate();
+            setTimeout(Server.hideProgressBar, 6000);
+        }
+    });
+}
 
 var attachEventOnButtonsManageServer = function() {
     $('.remove-server').click(function(){
         var serverPanel = $(this).parents(".server-panel");
         Server.deleteSlaveServer(serverPanel, serverPanel.find(".server-ip").text(), serverPanel.find(".server-username").text()); 
     });
+    $('.update-server').click(function(){
+        var serverPanel = $(this).parents(".server-panel");
+        Server.updateSlaveServer(serverPanel.find(".server-ip").text(), serverPanel.find(".server-username").text()); 
+    });
 };
-
 attachEventOnButtonsManageServer();
+
+var attachEventOnButtonAddServer = function () {
+    $('#add-slave-server').click(function() {
+        if ($("#progress-bar-container-server").css("display") != "none") {
+            alert("... Please Wait The End Of The Current Process ...");
+            return ;
+        }
+        $("#add-slave-server-failed").text('');
+        $("#add-slave-server-failed").css('display', 'none');
+        $('#AddSlaveServerModal').modal();
+    });
+};
+attachEventOnButtonAddServer();
 
 Server.displayButtonsManageServer = function () {
     $.ajax({
@@ -153,20 +208,6 @@ Server.displayButtonsManageServer = function () {
 		}
 	});
 };
-
-var attachEventOnButtonAddServer = function () {
-    $('#add-slave-server').click(function() {
-        if ($("#progress-bar-container-server").css("display") != "none") {
-            alert("... Please Wait The End Of The Current Process ...");
-            return ;
-        }
-        $("#add-slave-server-failed").text('');
-        $("#add-slave-server-failed").css('display', 'none');
-        $('#AddSlaveServerModal').modal();
-    });
-};
-
-attachEventOnButtonAddServer();
 
 Server.displayButtonAddServer = function () {
         $.ajax({
@@ -221,5 +262,3 @@ $('#add-slave-server-button').click(function(){
     $("#add-slave-server-password-confirmation").val('');
     $('#AddSlaveServerModal').modal('hide');
 });
-
-//attachEventOnUpdateServerButton();

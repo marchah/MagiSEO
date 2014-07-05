@@ -98,6 +98,20 @@ class VMDAO extends DAO {
         $reponse->closeCursor();
         return $listVM;
     }
+    
+    static function getListVMByState($state) {
+        $bdd = parent::ConnectionBDD();
+
+        $reponse = $bdd->query('SELECT vm.*, ss.IPV4 FROM vm vm INNER JOIN server_slave ss ON ss.id = vm.idserver WHERE vm.state= '.$bdd->quote($state).' ORDER BY vm.idserver');
+        $listVM = array();
+        while ($data = $reponse->fetch()) {
+            $VM = new VM($data['id'], $data['idserver'], $data['ip'], $data['name'], $data['username'], $data['password'], $data['ram'], $data['hdd'], $data['state']);
+            $VM->setServerIP($data['IPV4']);
+            $listVM[] = $VM;
+        }
+        $reponse->closeCursor();
+        return $listVM;
+    }
 
     static function getNewVM() {
         $bdd = parent::ConnectionBDD();
@@ -116,6 +130,19 @@ class VMDAO extends DAO {
         $bdd = parent::ConnectionBDD();
 
         $reponse = $bdd->query('SELECT vm.*, ss.IPV4 FROM vm vm INNER JOIN server_slave ss ON ss.id = vm.idserver WHERE vm.ip=' . $bdd->quote($IPVM). ' AND ss.IPV4=' . $bdd->quote($IPServer));
+        $VM = false;
+        if ($data = $reponse->fetch()) {
+            $VM = new VM($data['id'], $data['idserver'], $data['ip'], $data['name'], $data['username'], $data['password'], $data['ram'], $data['hdd'], $data['state']);
+            $VM->setServerIP($data['IPV4']);
+        }
+        $reponse->closeCursor();
+        return $VM;
+    }
+    
+    static function getVMByIdVM($IdVM) {
+        $bdd = parent::ConnectionBDD();
+
+        $reponse = $bdd->query('SELECT vm.*, ss.IPV4 FROM vm vm INNER JOIN server_slave ss ON ss.id = vm.idserver WHERE vm.id=' . $bdd->quote($IdVM));
         $VM = false;
         if ($data = $reponse->fetch()) {
             $VM = new VM($data['id'], $data['idserver'], $data['ip'], $data['name'], $data['username'], $data['password'], $data['ram'], $data['hdd'], $data['state']);

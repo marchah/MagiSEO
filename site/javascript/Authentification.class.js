@@ -55,6 +55,7 @@ function authSucces() {
                             VM.displayButtonsManageVM();
                             VM.displayButtonAddVM();
                             Report.displayButtonsReportSolved();
+                            Algo.displayButtonLaunchAlgoOnVM();
                         }
                 }
 	});
