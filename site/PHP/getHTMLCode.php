@@ -110,7 +110,7 @@ function getHTMLPanelServer($server) {
 									<p class="form-control-static">'. $server->getDiskCurrentSize() .'/'. $server->getDiskMaxSize() .'</p>
 								</div>
 							</div>'.
-							/*<div class="form-group">
+							/*'<div class="form-group">
 								<label class="col-sm-3 control-label">Proc Using</label>
 								<div class="col-sm-9">
 									<p class="form-control-static">'. $server->getNbCurrentProc() .'/'. $server->getNbMaxProc() .'</p>

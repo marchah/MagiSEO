@@ -4,7 +4,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/DAO/ReportDAO.class.
 header("Content-Type: text/plain");
 
 function	getAll() {
-    echo ReportDAO::getNbServerErrorWarning();
+    echo ReportDAO::getNbServerVMErrorWarning();
 }
 
 function	getLog() {
@@ -25,10 +25,16 @@ function	getLog() {
     
 }
 
+function getNbErrorAndWarning() {
+    echo ReportDAO::getNbServerVMErrorWarning();
+}
+
 
 if (isset($_POST["nameRequest"])) {
     if ($_POST["nameRequest"] == "getAll")
         getAll();
+    else if ($_POST["nameRequest"] == "getNbErrorAndWarning")
+        getNbErrorAndWarning();
     else if ($_POST["nameRequest"] == "getLog")
         getLog();
 }

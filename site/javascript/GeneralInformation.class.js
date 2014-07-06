@@ -9,10 +9,25 @@ GeneralInformation.getAll = function() {
         success: function (nbAll) {
             var result = nbAll.split('/');
             $('#nb_slave_server').text(result[0]);
-            $('#nb_error').text(result[1]);
-            $('#nb_warning').text(result[2]);
-            if (result[1] + result[2] > 0)
-                $('#alert_pb').html('<span class="label label-danger">' + (parseInt(result[1]) + parseInt(result[2])) + '</span>');
+            $('#nb_vm').text(result[1]);
+            $('#nb_error').text(result[2]);
+            //$('#nb_warning').text(result[2]);
+            if (result[2] + result[3] > 0)
+                $('#alert_pb').html('<span class="label label-danger">' + (parseInt(result[2]) + parseInt(result[3])) + '</span>');
+        }
+    });
+}
+
+GeneralInformation.getNbErrorAndWarning = function() {
+    $.ajax({
+        type: "POST",
+        url: urlServer + ajaxFolderPath + "getGeneralInformationAjax.php",
+        data: {nameRequest: "getNbErrorAndWarning"},
+        error: function (xhr) { console.log('error:', xhr.responseText); },
+        success: function (nbAll) {
+            var result = nbAll.split('/');
+            if (result[2] + result[3] > 0)
+                $('#alert_pb').html('<span class="label label-danger">' + (parseInt(result[2]) + parseInt(result[3])) + '</span>');
         }
     });
 }

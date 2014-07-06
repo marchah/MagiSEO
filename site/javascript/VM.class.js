@@ -1,6 +1,7 @@
 function VM() {}
 
 VM.hideProgressBar = function () {
+    GeneralInformation.getNbErrorAndWarning();
     $("#state-vm").text("");
     $("#progress-bar-vm").css("width", "0px");
     $("#progress-bar-container-vm").css("display", "none");

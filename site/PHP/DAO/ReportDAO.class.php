@@ -66,9 +66,10 @@ class ReportDAO extends DAO {
         return $listReport;
     }
     
-    static function getNbServerErrorWarning() {
+    static function getNbServerVMErrorWarning() {
         $bdd = parent::ConnectionBDD();
-        $response = $bdd->query('(SELECT COUNT(*) AS "All" FROM server_slave )'
+        $response = $bdd->query('(SELECT COUNT(id) AS "All" FROM server_slave )'
+                        . 'UNION ALL ( SELECT COUNT(id) AS "All" FROM vm )'
                         . 'UNION ALL ( SELECT COUNT(id) AS "All" FROM reporting WHERE type = ' . REPORTING_TYPE_SLAVE_ERROR . ')'
                         . 'UNION ALL ( SELECT COUNT(id) AS "All" FROM reporting WHERE type = ' . REPORTING_TYPE_SLAVE_WARNING . ')');
         $i = 0;

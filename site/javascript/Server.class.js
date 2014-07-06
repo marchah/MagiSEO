@@ -15,6 +15,7 @@ Server.displayNewPanelServer = function () {
 }
 
 Server.hideProgressBar = function () {
+    GeneralInformation.getNbErrorAndWarning();
     $("#state-server-slave").text("");
     $("#progress-bar-server-slave").css("width", "0px");
     $("#progress-bar-container-server").css("display", "none");

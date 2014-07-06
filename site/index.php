@@ -58,12 +58,12 @@ require_once('include/menu.html');
 								<!-- START Statistic Widget -->
 								<div class="table-layout animation delay animating fadeInDown">
 									<div class="col-xs-4 panel bgcolor-primary">
-										<div class="ico-warning-sign fsize24 text-center"></div>
+										<div class="ico-cabinet fsize24 text-center"></div>
 									</div>
 									<div class="col-xs-8 panel">
 										<div class="panel-body text-center">
-											<h4 id="nb_warning" class="semibold nm"></h4>
-											<p class="semibold text-muted mb0 mt5">WARNING</p>
+											<h4 id="nb_vm" class="semibold nm"></h4>
+											<p class="semibold text-muted mb0 mt5">VM</p>
 										</div>
 									</div>
 								</div>
