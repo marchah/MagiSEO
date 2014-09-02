@@ -260,7 +260,7 @@ function getHTMLAllPanelVM() {
     }
     return $HTMLAllPanelVM;
 }
-
+/*
 function getHTMLPanelRunningVM($VM) {
     return '<div class="col-md-4 server-panel">
 			<!-- START panel -->
@@ -330,7 +330,7 @@ function getHTMLAllPanelRunningVM() {
         $HTMLPanelRunningVM .= getHTMLPanelRunningVM($VM);
     }
     return $HTMLPanelRunningVM;
-}
+}*/
 
 function getHTMLPanelNewVM() {
     return getHTMLPanelVM(VMDAO::getNewVM());
