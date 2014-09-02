@@ -91,7 +91,7 @@ class VMDAO extends DAO {
         $reponse = $bdd->query('SELECT vm.*, ss.IPV4 FROM vm vm INNER JOIN server_slave ss ON ss.id = vm.idserver ORDER BY vm.idserver');
         $listVM = array();
         while ($data = $reponse->fetch()) {
-            $VM = new VM($data['id'], $data['idserver'], $data['ip'], $data['name'], $data['username'], $data['password'], $data['ram'], $data['hdd'], $data['state']);
+            $VM = new VM($data['id'], $data['idserver'], $data['ip'], $data['port'], $data['name'], $data['username'], $data['password'], $data['ram'], $data['hdd'], $data['state']);
             $VM->setServerIP($data['IPV4']);
             $listVM[] = $VM;
         }
@@ -105,7 +105,7 @@ class VMDAO extends DAO {
         $reponse = $bdd->query('SELECT vm.*, ss.IPV4 FROM vm vm INNER JOIN server_slave ss ON ss.id = vm.idserver WHERE vm.state= '.$bdd->quote($state).' ORDER BY vm.idserver');
         $listVM = array();
         while ($data = $reponse->fetch()) {
-            $VM = new VM($data['id'], $data['idserver'], $data['ip'], $data['name'], $data['username'], $data['password'], $data['ram'], $data['hdd'], $data['state']);
+            $VM = new VM($data['id'], $data['idserver'], $data['ip'], $data['port'], $data['name'], $data['username'], $data['password'], $data['ram'], $data['hdd'], $data['state']);
             $VM->setServerIP($data['IPV4']);
             $listVM[] = $VM;
         }
@@ -119,7 +119,7 @@ class VMDAO extends DAO {
         $reponse = $bdd->query('SELECT vm.*, ss.IPV4 FROM vm vm INNER JOIN server_slave ss ON ss.id = vm.idserver ORDER BY vm.id DESC LIMIT 1');
         $VM;
         if ($data = $reponse->fetch()) {
-            $VM = new VM($data['id'], $data['idserver'], $data['ip'], $data['name'], $data['username'], $data['password'], $data['ram'], $data['hdd'], $data['state']);
+            $VM = new VM($data['id'], $data['idserver'], $data['ip'], $data['port'], $data['name'], $data['username'], $data['password'], $data['ram'], $data['hdd'], $data['state']);
             $VM->setServerIP($data['IPV4']);
         }
         $reponse->closeCursor();
@@ -132,7 +132,7 @@ class VMDAO extends DAO {
         $reponse = $bdd->query('SELECT vm.*, ss.IPV4 FROM vm vm INNER JOIN server_slave ss ON ss.id = vm.idserver WHERE vm.ip=' . $bdd->quote($IPVM). ' AND ss.IPV4=' . $bdd->quote($IPServer));
         $VM = false;
         if ($data = $reponse->fetch()) {
-            $VM = new VM($data['id'], $data['idserver'], $data['ip'], $data['name'], $data['username'], $data['password'], $data['ram'], $data['hdd'], $data['state']);
+            $VM = new VM($data['id'], $data['idserver'], $data['ip'], $data['port'], $data['name'], $data['username'], $data['password'], $data['ram'], $data['hdd'], $data['state']);
             $VM->setServerIP($data['IPV4']);
         }
         $reponse->closeCursor();
@@ -145,7 +145,7 @@ class VMDAO extends DAO {
         $reponse = $bdd->query('SELECT vm.*, ss.IPV4 FROM vm vm INNER JOIN server_slave ss ON ss.id = vm.idserver WHERE vm.id=' . $bdd->quote($IdVM));
         $VM = false;
         if ($data = $reponse->fetch()) {
-            $VM = new VM($data['id'], $data['idserver'], $data['ip'], $data['name'], $data['username'], $data['password'], $data['ram'], $data['hdd'], $data['state']);
+            $VM = new VM($data['id'], $data['idserver'], $data['ip'], $data['port'], $data['name'], $data['username'], $data['password'], $data['ram'], $data['hdd'], $data['state']);
             $VM->setServerIP($data['IPV4']);
         }
         $reponse->closeCursor();
@@ -178,14 +178,14 @@ class VMDAO extends DAO {
     }
     
     static function getVMsRamUsedByIdServer($idServer) {
-            $bdd = parent::ConnectionBDD();
-	
-            $totalRAM = 0;
-            $reponse = $bdd->query('SELECT COALESCE(SUM(ram), 0) AS \'TotalRAM\' FROM vm WHERE idserver=' . $bdd->quote($idServer));
-            if ($data = $reponse->fetch())
-                $totalRAM = $data['TotalRAM'];
-            $reponse->closeCursor();
-            return $totalRAM;
-        }
+        $bdd = parent::ConnectionBDD();
+
+        $totalRAM = 0;
+        $reponse = $bdd->query('SELECT COALESCE(SUM(ram), 0) AS \'TotalRAM\' FROM vm WHERE idserver=' . $bdd->quote($idServer));
+        if ($data = $reponse->fetch())
+            $totalRAM = $data['TotalRAM'];
+        $reponse->closeCursor();
+        return $totalRAM;
+    }
 
 }
