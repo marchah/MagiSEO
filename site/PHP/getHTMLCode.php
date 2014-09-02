@@ -210,20 +210,13 @@ function getHTMLPanelVM($VM) {
 				<!--/ panel heading/header -->
 				
 				<!-- panel body with collapse capable -->
-				<div style="" class="panel-collapse in pull out">
+                                <div style="" class="panel-collapse in pull out">
 					<div class="panel-body">
 						<div class="form-horizontal form-bordered">
 							<div class="form-group">
 								<label class="col-sm-3 control-label">IPV4</label>
 								<div class="col-sm-9">
 									<p class="form-control-static vm-ip">'. $VM->getIP() .'</p>
-								</div>
-							</div>
-							
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Name</label>
-								<div class="col-sm-9">
-									<p class="form-control-static">'. $VM->getName() .'</p>
 								</div>
 							</div>
 							<div class="form-group">
@@ -238,6 +231,7 @@ function getHTMLPanelVM($VM) {
 									<p class="form-control-static">'. $VM->getRAM() .'</p>
 								</div>
 							</div>
+                                                        <span class="vm-id" style="display:none">'. $VM->getId() .'</span>
 						</div>
 					</div>
 				</div>
@@ -260,7 +254,7 @@ function getHTMLAllPanelVM() {
     }
     return $HTMLAllPanelVM;
 }
-
+/*
 function getHTMLPanelRunningVM($VM) {
     return '<div class="col-md-4 server-panel">
 			<!-- START panel -->
@@ -331,7 +325,7 @@ function getHTMLAllPanelRunningVM() {
     }
     return $HTMLPanelRunningVM;
 }
-
+*/
 function getHTMLPanelNewVM() {
     return getHTMLPanelVM(VMDAO::getNewVM());
 }

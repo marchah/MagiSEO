@@ -44,6 +44,15 @@ function connectionServerWithKey($Server, $PATH_CACHE, $NAME_STEP, $NAME_STEP_ER
     return $ssh;
 }
 
+function connectionVMWithPassword($VM, $PATH_CACHE, $NAME_STEP, $NAME_STEP_ERROR) {
+    $ssh = new Net_SSH2($VM->getIp(), $VM->getPort());
+    if (!$ssh->login($VM->getUsername(), $VM->getPassword())) {
+        Cache::write($PATH_CACHE, $NAME_STEP_ERROR);
+        exit(ERROR_SSH_CONNECTION_INVALID_AUTH);
+    }
+    return $ssh;
+}
+
 function installVM() {
     $idServer = (isset($_POST["idServer"])) ? $_POST["idServer"] : "";
     $name = (isset($_POST["name"])) ? $_POST["name"] : "";
@@ -142,25 +151,24 @@ function desinstallVM() {
 
 function updateVM() {
     $ipServer = (isset($_POST["ipServer"])) ? $_POST["ipServer"] : "";
-    $ipVM = (isset($_POST["ipVM"])) ? $_POST["ipVM"] : "";
+    $idVM = (isset($_POST["idVM"])) ? $_POST["idVM"] : "";
     
     Cache::write(PATH_CACHE_FILE_UPDATE_VM, UPDATE_VM_STEP_INIT);
-    if (empty($ipServer) || empty($ipVM)) {
+    if (empty($ipServer) || empty($idVM)) {
         Cache::write(PATH_CACHE_FILE_UPDATE_VM, UPDATE_VM_STEP_ERROR);
         exit(ERROR_VM_DESINSTALL_MISSING_REQUIREMENT);
     }
-
     if (($Server = ServerDAO::getServerByIP($ipServer)) == null) {
         Cache::write(PATH_CACHE_FILE_UPDATE_VM, UPDATE_VM_STEP_ERROR);
         exit(ERROR_VM_INVALID_REQUIREMENT);
     }
     
-    if (($VM = VMDAO::getVMByIPServerAndIPVM($ipServer, $ipVM)) === false) {
+    if (($VM = VMDAO::getVMByIdVM($idVM)) === false) {
         Cache::write(PATH_CACHE_FILE_UPDATE_VM, UPDATE_VM_STEP_ERROR);
         exit(ERROR_VM_UNKNOW);
     }
     Cache::write(PATH_CACHE_FILE_UPDATE_VM, UPDATE_VM_STEP_CONNECTION_VM);
-    $ssh = connectionServerWithKey($Server, PATH_CACHE_FILE_UPDATE_VM, UPDATE_VM_STEP, UPDATE_VM_STEP_ERROR);
+    $ssh = connectionVMWithPassword($VM, PATH_CACHE_FILE_UPDATE_VM, UPDATE_VM_STEP, UPDATE_VM_STEP_ERROR);
     set_time_limit(300);
     Cache::write(PATH_CACHE_FILE_UPDATE_VM, UPDATE_VM_STEP_UPDATING_SOFTWARE);
     $ssh->read(REGEX_PROMPT, NET_SSH2_READ_REGEX);

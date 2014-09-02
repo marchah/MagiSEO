@@ -145,7 +145,7 @@ VM.deleteVM = function (VMPanel, ipServer, ipVM) {
     });
 }
 
-VM.updateVM = function (ipServer, ipVM) {
+VM.updateVM = function (ipServer, idVM) {
     if ($("#progress-bar-container-vm").css("display") != "none") {
         alert("... Please Wait The End Of The Current Process ...");
         return ;
@@ -154,7 +154,7 @@ VM.updateVM = function (ipServer, ipVM) {
     $.ajax({
        type: "POST",
        url: urlServer + ajaxFolderPath + "VMAjax.php",
-       data:{nameRequest: "updateVM", ipServer: ipServer, ipVM: ipVM},
+       data:{nameRequest: "updateVM", ipServer: ipServer, idVM: idVM},
        dataType: document.json,
        error: function (xhr) { console.log('error:', xhr.responseText);},
        success: function (str) {
@@ -172,11 +172,11 @@ VM.updateVM = function (ipServer, ipVM) {
 var attachEventOnButtonsManageVM = function() {
     $('.remove-vm').click(function(){
         var VMPanel = $(this).parents(".server-panel");
-        VM.deleteVM(VMPanel, (VMPanel.find(".panel-title").text()).split(': ')[1], VMPanel.find(".vm-ip").text()); 
+        VM.deleteVM(VMPanel, (VMPanel.find(".panel-title").text()).split(': ')[1], VMPanel.find(".vm-id").text()); 
     });
     $('.update-vm').click(function(){
         var VMPanel = $(this).parents(".server-panel");
-        VM.updateVM((VMPanel.find(".panel-title").text()).split(': ')[1], VMPanel.find(".vm-ip").text()); 
+        VM.updateVM((VMPanel.find(".panel-title").text()).split(': ')[1], VMPanel.find(".vm-id").text()); 
     });
 };
 attachEventOnButtonsManageVM();
