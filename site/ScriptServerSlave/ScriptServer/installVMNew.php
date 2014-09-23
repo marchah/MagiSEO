@@ -11,7 +11,7 @@ function installVM($nameVM, $RAM, $HDDSize) {
                         .'VBoxManage import '.NAME_OVA_OS.' --vsys 0 --vmname '.$nameVM.' --memory '.$RAM.' --unit 12 --disk '.PATH_VMS_FOLDER.$nameVM.'/'.$nameVM.'-disk1_2.vmdk --unit 4 --ignore --unit 5 --ignore --unit 6 --ignore --unit 7 --ignore  --unit 8 --ignore --unit 9 --ignore --unit 10 --ignore;'
                         //.'VBoxManage modifyvm '.$nameVM.' --nic1 bridged --bridgeadapter1 eth0;'
                         //.'rm -rf '.NAME_OVA_OS.';' TODO MORE CLEAN
-                        .'VBoxHeadless --startvm "'.$nameVM.'" --vrde off &'
+                        .'VBoxHeadless --startvm "'.$nameVM.'" --vrde off 1> stdout.log 2>sterr.log &'
             , $output, $return_val);
     echo $return_val . "\n";
 }
