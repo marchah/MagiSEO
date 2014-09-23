@@ -11,7 +11,7 @@ site/javascript/ServerConstantes.js
 
 site/PHP/BDDConstantes.php
 
-chmod 777 site/cache/
+chown www-data:www-data MagiSEO/ -R
 
 
 Epitech Innovative Project: My Final Project For My Master Degree
