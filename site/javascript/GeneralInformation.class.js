@@ -13,7 +13,7 @@ GeneralInformation.getAll = function() {
             $('#nb_error').text(result[2]);
             //$('#nb_warning').text(result[2]);
             if (result[2] + result[3] > 0)
-                $('#alert_pb').html('<span class="label label-danger">' + (parseInt(result[2]) + parseInt(result[3])) + '</span>');
+                $('#alert_pb').html('<span class="label label-danger">' + (parseInt(result[4])) + '</span>');
         }
     });
 }
@@ -27,7 +27,7 @@ GeneralInformation.getNbErrorAndWarning = function() {
         success: function (nbAll) {
             var result = nbAll.split('/');
             if (result[2] + result[3] > 0)
-                $('#alert_pb').html('<span class="label label-danger">' + (parseInt(result[2]) + parseInt(result[3])) + '</span>');
+                $('#alert_pb').html('<span class="label label-danger">' + (parseInt(result[4])) + '</span>');
         }
     });
 }

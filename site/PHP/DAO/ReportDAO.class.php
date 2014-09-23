@@ -45,7 +45,7 @@ class ReportDAO extends DAO {
     static function getAllReportExceptLog() {
         $listReport = array();
         $bdd = parent::ConnectionBDD();
-        $response = $bdd->query('SELECT l.*,  rt.name AS \'typeName\', u.login FROM reporting l INNER JOIN reporting_type rt on rt.id = l.type LEFT JOIN user u ON l.iduser = u.id WHERE l.type != 6 ORDER BY l.id ASC');
+        $response = $bdd->query('SELECT l.*,  rt.name AS \'typeName\', u.login FROM reporting l INNER JOIN reporting_type rt on rt.id = l.type LEFT JOIN user u ON l.iduser = u.id WHERE l.type != '.REPORTING_TYPE_LOG.' ORDER BY l.id ASC');
 
         while ($data = $response->fetch()) {
             $listReport[] = self::createReport($data);
@@ -71,7 +71,8 @@ class ReportDAO extends DAO {
         $response = $bdd->query('(SELECT COUNT(id) AS "All" FROM server_slave )'
                         . 'UNION ALL ( SELECT COUNT(id) AS "All" FROM vm )'
                         . 'UNION ALL ( SELECT COUNT(id) AS "All" FROM reporting WHERE type = ' . REPORTING_TYPE_SLAVE_ERROR . ')'
-                        . 'UNION ALL ( SELECT COUNT(id) AS "All" FROM reporting WHERE type = ' . REPORTING_TYPE_SLAVE_WARNING . ')');
+                        . 'UNION ALL ( SELECT COUNT(id) AS "All" FROM reporting WHERE type = ' . REPORTING_TYPE_SLAVE_WARNING . ')'
+                        . 'UNION ALL ( SELECT COUNT(id) AS "All" FROM reporting WHERE type != ' . REPORTING_TYPE_LOG. ')');
         $i = 0;
         $anwser = "";
         while ($data = $response->fetch()) {
@@ -83,6 +84,8 @@ class ReportDAO extends DAO {
         $response->closeCursor();
         return $anwser;
     }
+    
+    
 }
 
 ?>
