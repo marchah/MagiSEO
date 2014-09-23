@@ -58,12 +58,15 @@ function installVM() {
     $name = (isset($_POST["name"])) ? $_POST["name"] : "";
     $RAM = (isset($_POST["RAM"])) ? $_POST["RAM"] : "";
     $HDD = (isset($_POST["HDD"])) ? $_POST["HDD"] : "";
+    $IpAlgo = (isset($_POST["IpAlgo"])) ? $_POST["IpAlgo"] : "";
+    $URLClient = (isset($_POST["URLClient"])) ? $_POST["URLClient"] : "";
+    $isArchive = (isset($_POST["isArchive"])) ? $_POST["isArchive"] : false;
     Cache::write(PATH_CACHE_FILE_INSTALL_VM, INSTALL_VM_STEP_INIT);
-    if (empty($idServer) || empty($name) || empty($RAM) || empty($HDD)) {
+    if (empty($idServer) || empty($name) || empty($RAM) || empty($HDD) || empty($IpAlgo) || empty($URLClient)) {
         Cache::write(PATH_CACHE_FILE_INSTALL_VM, INSTALL_VM_STEP_ERROR);
         exit(ERROR_VM_MISSING_REQUIREMENT);
     }
-    
+
     if (intval($RAM) < VM_MIN_SIZE_RAM || intval($HDD) < VM_MIN_SIZE_HDD) {
         Cache::write(PATH_CACHE_FILE_INSTALL_VM, INSTALL_VM_STEP_ERROR);
         exit(ERROR_VM_INVALID_REQUIREMENT);
@@ -74,10 +77,10 @@ function installVM() {
         exit(ERROR_VM_INVALID_REQUIREMENT);
     }
     
-    if ($Server->getFlashCurrentSize() + intval($RAM) >= $Server->getFlashMaxSize()) {
+   /* if ($Server->getFlashCurrentSize() + intval($RAM) >= $Server->getFlashMaxSize()) {
         Cache::write(PATH_CACHE_FILE_INSTALL_VM, INSTALL_VM_STEP_ERROR);
         exit(ERROR_VM_RAM_SIZE);
-    }
+    }*/
     
     /*if ($Server->getDiskCurrentSize() + intval($HDD) >= $Server->getDiskMaxSize()) {
         Cache::write(PATH_CACHE_FILE_INSTALL_VM, INSTALL_VM_STEP_ERROR);
@@ -95,17 +98,18 @@ function installVM() {
     }
     
     Cache::write(PATH_CACHE_FILE_INSTALL_VM, INSTALL_VM_STEP_CONNECTION_SERVER);
-    $ssh = connectionServerWithKey($Server, PATH_CACHE_FILE_INSTALL_VM, INSTALL_VM_STEP, INSTALL_VM_STEP_ERROR);
+    //$ssh = connectionServerWithKey($Server, PATH_CACHE_FILE_INSTALL_VM, INSTALL_VM_STEP, INSTALL_VM_STEP_ERROR);
     Cache::write(PATH_CACHE_FILE_INSTALL_VM, INSTALL_VM_STEP_INSTALLING);
+    $port = VMDAO::getNextPortTunnelVM();
     VMDAO::deleteVMProcessing();
-    VMDAO::insertVMProcessing($Server->getId(), $Server->getIPV4(), date("Y-m-d H:i:s"), 0);
-    
+    VMDAO::insertVMProcessing($Server->getId(), $Server->getIPV4(), date("Y-m-d H:i:s"), $port, MASTER_IP, $IpAlgo, $URLClient, $isArchive);
+    return ;
     $ssh->read(REGEX_PROMPT, NET_SSH2_READ_REGEX);
     $ssh->write("su -c \"php ScriptServer/installVMNew.php ".$name." ".$RAM." ".$HDD."\"\n");
     set_time_limit(2000);
     
     while (!VMDAO::isVMProcessingDone()) {
-        sleep(10);
+        sleep(5);
     }
     Cache::write(PATH_CACHE_FILE_INSTALL_VM, INSTALL_VM_STEP_SAVING_BDD);
     $idVM = VMDAO::getIdVMInProcess();
@@ -146,6 +150,39 @@ function desinstallVM() {
     VMDAO::deleteVM($VM->getId());
     Cache::write(PATH_CACHE_FILE_DESINSTALL_VM, DESINSTALL_VM_STEP_DONE);
     ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), $_SESSION['user']->getLogin(), "Desinstall VM On Server ".$Server->getIPV4(), "Success", REPORTING_TYPE_LOG, date("Y-m-d H:i:s")));
+    echo true;
+}
+
+function cancelVM() {
+    $ipServer = (isset($_POST["ipServer"])) ? $_POST["ipServer"] : "";
+    $ipVM = (isset($_POST["ipVM"])) ? $_POST["ipVM"] : "";
+    
+    Cache::write(PATH_CACHE_FILE_DESINSTALL_VM, DESINSTALL_VM_STEP_INIT);
+    if (empty($ipServer) || empty($ipVM)) {
+        Cache::write(PATH_CACHE_FILE_DESINSTALL_VM, DESINSTALL_VM_STEP_ERROR);
+        exit(ERROR_VM_DESINSTALL_MISSING_REQUIREMENT);
+    }
+
+    if (($Server = ServerDAO::getServerByIP($ipServer)) == null) {
+        Cache::write(PATH_CACHE_FILE_DESINSTALL_VM, DESINSTALL_VM_STEP_ERROR);
+        exit(ERROR_VM_INVALID_REQUIREMENT);
+    }
+    
+    if (($VM = VMDAO::getVMByIPServerAndIPVM($ipServer, $ipVM)) === false) {
+        Cache::write(PATH_CACHE_FILE_DESINSTALL_VM, DESINSTALL_VM_STEP_ERROR);
+        exit(ERROR_VM_UNKNOW);
+    }
+    
+    Cache::write(PATH_CACHE_FILE_DESINSTALL_VM, DESINSTALL_VM_STEP_CONNECTION_SERVER);
+    $ssh = connectionServerWithKey($Server, PATH_CACHE_FILE_DESINSTALL_VM, DESINSTALL_VM_STEP, DESINSTALL_VM_STEP_ERROR);
+    Cache::write(PATH_CACHE_FILE_DESINSTALL_VM, DESINSTALL_VM_STEP_DESINSTALLING);
+    set_time_limit(300);
+    $ssh->read(REGEX_PROMPT, NET_SSH2_READ_REGEX);
+    $ssh->write("su -c \"php ScriptServer/desinstallVM.php ".$VM->getName()."\"\n");
+    Cache::write(PATH_CACHE_FILE_DESINSTALL_VM, DESINSTALL_VM_STEP_DELETING_VM_BDD);
+    VMDAO::updateStateVM($VM->getId(), VM_STATE_CANCELED);
+    Cache::write(PATH_CACHE_FILE_DESINSTALL_VM, DESINSTALL_VM_STEP_DONE);
+    ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), $_SESSION['user']->getLogin(), "Cancel VM On Server ".$Server->getIPV4(), "Success", REPORTING_TYPE_LOG, date("Y-m-d H:i:s")));
     echo true;
 }
 
@@ -190,6 +227,8 @@ if (isset($_POST["nameRequest"])) {
 	installVM();
     else if ($_POST["nameRequest"] == "desinstallVM")
 	desinstallVM();
+    else if ($_POST["nameRequest"] == "cancelVM")
+	cancelVM();
     else if ($_POST["nameRequest"] == "updateVM")
 	updateVM();
 }

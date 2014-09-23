@@ -93,7 +93,7 @@ VM.displayNewPanelVM = function () {
     });
 }
 
-VM.addVM = function (idServer, name, RAM, HDD) {
+VM.addVM = function (idServer, name, RAM, HDD, IpAlgo, URLClient, isArchive) {
     if ($("#progress-bar-container-vm").css("display") != "none") {
         alert("... Please Wait The End Of The Current Process ...");
         return ;
@@ -102,7 +102,7 @@ VM.addVM = function (idServer, name, RAM, HDD) {
     $.ajax({
        type: "POST",
        url: urlServer + ajaxFolderPath + "VMAjax.php",
-       data:{nameRequest: "installVM", idServer: idServer, name: name, RAM: RAM, HDD: HDD},
+       data:{nameRequest: "installVM", idServer: idServer, name: name, RAM: RAM, HDD: HDD, IpAlgo: IpAlgo, URLClient : URLClient, isArchive : isArchive},
        dataType: document.json,
        error: function (xhr) { console.log('error:', xhr.responseText);},
        success: function (str) {
@@ -129,6 +129,32 @@ VM.deleteVM = function (VMPanel, ipServer, ipVM) {
        type: "POST",
        url: urlServer + ajaxFolderPath + "VMAjax.php",
        data:{nameRequest: "desinstallVM", ipServer: ipServer, ipVM: ipVM},
+       dataType: document.json,
+       error: function (xhr) { console.log('error:', xhr.responseText);},
+       success: function (str) {
+                if (str == 1)
+                    VMPanel.remove();
+                else
+                    alert(str);
+        },
+        complete : function() {
+            clearInterval(x);
+            VM.progressDesinstall();
+            setTimeout(VM.hideProgressBar, 6000);
+        }
+    });
+}
+
+VM.cancelVM = function (VMPanel, ipServer, ipVM) {
+    if ($("#progress-bar-container-vm").css("display") != "none") {
+        alert("... Please Wait The End Of The Current Process ...");
+        return ;
+    }
+    var x = setInterval(VM.progressDesinstall, 2000);
+    $.ajax({
+       type: "POST",
+       url: urlServer + ajaxFolderPath + "VMAjax.php",
+       data:{nameRequest: "cancelVM", ipServer: ipServer, ipVM: ipVM},
        dataType: document.json,
        error: function (xhr) { console.log('error:', xhr.responseText);},
        success: function (str) {
@@ -173,6 +199,10 @@ var attachEventOnButtonsManageVM = function() {
     $('.remove-vm').click(function(){
         var VMPanel = $(this).parents(".server-panel");
         VM.deleteVM(VMPanel, (VMPanel.find(".panel-title").text()).split(': ')[1], VMPanel.find(".vm-id").text()); 
+    });
+    $('.cancel-vm').click(function(){
+        var VMPanel = $(this).parents(".server-panel");
+        VM.cancelVM(VMPanel, (VMPanel.find(".panel-title").text()).split(': ')[1], VMPanel.find(".vm-id").text()); 
     });
     $('.update-vm').click(function(){
         var VMPanel = $(this).parents(".server-panel");
@@ -269,13 +299,21 @@ $('#add-vm-button').click(function(){
         Require("HDD VM have to be >= " + minSizeHDD, "#add-vm-hdd");
         return ;
     }
-    
-    VM.addVM($("#add-vm-ip-server").val(), $("#add-vm-name").val(), $("#add-vm-ram").val(), $("#add-vm-hdd").val());
+    if ($("#add-vm-ip-algo").val().length < 1) {
+        Require("Name IP Algo Server required", "#add-vm-ip-algo");
+        return ;
+    }
+    if ($("#add-vm-url-client-site").val().length < 1) {
+        Require("Name URL Client Website required", "#add-vm-url-client-sit");
+        return ;
+    }
+    VM.addVM($("#add-vm-ip-server").val(), $("#add-vm-name").val(), $("#add-vm-ram").val(), $("#add-vm-hdd").val(), $("#add-vm-ip-algo").val(), $("#add-vm-url-client-site").val(), $("#add-vm-is-archive").is(':checked'));
     $("#add-vm-ip-server").val('');
     $("#add-vm-name").val('');
     $("#add-vm-ram").val('');
     $("#add-vm-hdd").val('');
+    $("#add-vm-ip-algo").val('');
+    $("#add-vm-url-client-site").val('');
+    //$("#add-vm-is-archive").removeProp('checked');
     $('#AddVMModal').modal('hide');
 });
-
-

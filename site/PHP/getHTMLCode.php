@@ -160,23 +160,7 @@ function getHTMLPanelNewServer() {
 function getHTMLButtonsManageVM() {
     if (isset($_SESSION['auth']) && $_SESSION['auth'] == true)
 		return '<div class="btn-group">
-                            <button class="btn btn-sm btn-danger dropdown-toggle" data-toggle="dropdown" type="button">
-                                Action
-                                <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu pull-right">
-                                <li>
-                                    <a class="update-vm" href="#">
-                                        Update
-                                    </a>
-                                </li>
-                                <li class="divider"></li>
-                                <li>
-                                    <a class="text-danger remove-vm" href="#">
-                                        Delete
-                                    </a>
-                                </li>
-                            </ul>
+                            <button type="button" class="btn btn-danger mb5 cancel-vm"><i class="ico-fire22"></i> Cancel</button>
                         </div>';
 	http_response_code(401);
 	return false;
@@ -214,9 +198,21 @@ function getHTMLPanelVM($VM) {
 					<div class="panel-body">
 						<div class="form-horizontal form-bordered">
 							<div class="form-group">
+								<label class="col-sm-3 control-label">Name</label>
+								<div class="col-sm-9">
+									<p class="form-control-static vm-name">'. $VM->getName() .'</p>
+								</div>
+							</div>
+                                                        <div class="form-group">
 								<label class="col-sm-3 control-label">IPV4</label>
 								<div class="col-sm-9">
 									<p class="form-control-static vm-ip">'. $VM->getIP() .'</p>
+								</div>
+							</div>
+                                                        <div class="form-group">
+								<label class="col-sm-3 control-label">Port</label>
+								<div class="col-sm-9">
+									<p class="form-control-static vm-port">'. $VM->getPort() .'</p>
 								</div>
 							</div>
 							<div class="form-group">
@@ -246,7 +242,7 @@ function getHTMLPanelVM($VM) {
 }
 
 function getHTMLAllPanelVM() {
-    $listVM = VMDAO::getListVM();
+    $listVM = VMDAO::getListVM(); //getListVMWorking();
 
     $HTMLAllPanelVM = "";
     foreach($listVM as $VM) {
