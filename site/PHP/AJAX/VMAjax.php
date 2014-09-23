@@ -98,12 +98,11 @@ function installVM() {
     }
     
     Cache::write(PATH_CACHE_FILE_INSTALL_VM, INSTALL_VM_STEP_CONNECTION_SERVER);
-    //$ssh = connectionServerWithKey($Server, PATH_CACHE_FILE_INSTALL_VM, INSTALL_VM_STEP, INSTALL_VM_STEP_ERROR);
+    $ssh = connectionServerWithKey($Server, PATH_CACHE_FILE_INSTALL_VM, INSTALL_VM_STEP, INSTALL_VM_STEP_ERROR);
     Cache::write(PATH_CACHE_FILE_INSTALL_VM, INSTALL_VM_STEP_INSTALLING);
     $port = VMDAO::getNextPortTunnelVM();
     VMDAO::deleteVMProcessing();
     VMDAO::insertVMProcessing($Server->getId(), $Server->getIPV4(), date("Y-m-d H:i:s"), $port, MASTER_IP, $IpAlgo, $URLClient, $isArchive);
-    return ;
     $ssh->read(REGEX_PROMPT, NET_SSH2_READ_REGEX);
     $ssh->write("su -c \"php ScriptServer/installVMNew.php ".$name." ".$RAM." ".$HDD."\"\n");
     set_time_limit(2000);
