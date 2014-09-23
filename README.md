@@ -1,11 +1,8 @@
 MagiSEO
 =======
 
-Deployment
-==
+Deployment Missing files:
 
-Missing files
-=
 site/.htaccess
 site/.htpasswd
 site/javascript/ServerConstantes.js
