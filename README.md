@@ -11,6 +11,8 @@ site/javascript/ServerConstantes.js
 
 site/PHP/BDDConstantes.php
 
+site/PHP/VMImage/*.ova
+
 chown www-data:www-data MagiSEO/ -R
 
 
