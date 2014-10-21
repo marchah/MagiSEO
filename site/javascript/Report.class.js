@@ -10,14 +10,12 @@ var attachEventOnButtonsReportSolved = function () {
 	   dataType: document.json,
 	   error: function (xhr) { if (xhr.status == 401) alert('Error: ' + xhr.statusText); console.log('error:', xhr.responseText); },
 	   success: function (flag) {
-			if (flag == true) {
-                            reportLine.remove();
-                            GeneralInformation.getAll();
-                        }
-                        else
-                            alert("Error: impossible to solved this report.");
-                        
-                        
+                    if (flag == true) {
+                        reportLine.remove();
+                        GeneralInformation.getAll();
+                    }
+                    else
+                        alert("Error: impossible to solved this report.");     
 		}
 	});
         
