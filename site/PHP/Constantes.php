@@ -17,12 +17,15 @@ define('PATH_ROOT_WEBSITE', $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/');
 
 
 
-define('SERVER_MIN_RAM_REQUIRE', 512);
+define('SERVER_MIN_RAM_REQUIRE', 512);// For server slave online: 3415
 
 /*** VM Constantes ***/
 
 define('VM_MIN_SIZE_RAM', 512);
 define('VM_MIN_SIZE_HDD', 10000);
+
+define('VM_SIZE_RAM', 1024); // For server slave online: 512
+define('VM_SIZE_HDD', 10000);
 
 define('VM_STATE_PROCESSING', 1);
 define('VM_STATE_DONE', 2);

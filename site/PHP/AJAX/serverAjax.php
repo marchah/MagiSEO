@@ -58,7 +58,7 @@ function fatal_handler() {
   
    echo $errno ."\n" . $errline . "\n" . $errstr . "\n";
 }*/
-
+/*
 function connectionServerWithKey() {
     
     $ipServerSSH = (isset($_POST["ipServerSSH"])) ? $_POST["ipServerSSH"] : "";
@@ -187,7 +187,7 @@ function decompressScriptArchive($ssh) {
     $ssh->exec("chmod +x ScriptServer/installSoftware.sh");
     $ssh->exec("chmod +x ScriptServer/desinstallServerSlave.sh");
     $ssh->exec("chmod +x ScriptServer/updateServerSlave.sh");
-}
+}*/
 
 function installServerSlave() {
     $ipServerSSH = (isset($_POST["ipServerSSH"])) ? $_POST["ipServerSSH"] : "";
@@ -203,7 +203,7 @@ function installServerSlave() {
         Cache::write(PATH_CACHE_FILE_INSTALL, INSTALL_SERVER_STEP_ERROR);
         exit(ERROR_SSH_SERVER_ALREADY_CONFIGURATED);
     }
-    $installServer = new installServer($ipServerSSH, $login, $password);//"192.168.234.202", "marcha", "totoauzoo");
+    $installServer = new installServer($ipServerSSH, $login, $password);
     if ($installServer->install() === true) {
         Cache::write(PATH_CACHE_FILE_INSTALL, INSTALL_SERVER_STEP_DONE);
         echo true;
@@ -229,7 +229,7 @@ function installServerSlaveAndConfigureVMs() {
     $installServer = new installServer($ipServerSSH, $login, $password);
     if ($installServer->install() === true) {
         Cache::write(PATH_CACHE_FILE_INSTALL, INSTALL_SERVER_STEP_CONFIGURING_VMS);
-        $installVM = new installVM($installServer, 1024, 10000);
+        $installVM = new installVM($installServer, VM_SIZE_RAM, VM_SIZE_HDD);
         $installVM->install();
         Cache::write(PATH_CACHE_FILE_INSTALL, INSTALL_SERVER_STEP_DONE_CONFIGURING_VMS);
         echo true;
