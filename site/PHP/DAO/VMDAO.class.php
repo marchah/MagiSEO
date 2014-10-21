@@ -68,6 +68,16 @@ class VMDAO extends DAO {
             return intval($data['id']);
         return false;
     }
+    
+    static function getIdVMInProcessing() {
+        $bdd = parent::ConnectionBDD();
+
+        $reponse = $bdd->query("SELECT idvm FROM vm_processing");
+
+        if ($data = $reponse->fetch())
+            return intval($data['idvm']);
+        return false;
+    }
 
     static function updateVMToDone($id, $idServer, $name, $username, $password, $RAM, $HDD) {
         $bdd = parent::ConnectionBDD();

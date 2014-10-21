@@ -13,6 +13,7 @@ define('ERROR_SSH_SAVE_KEY_FAILED', 'Error: Save key failed');
 define('ERROR_COPY_FILE', 'Error: Copy file failed');
 define('ERROR_COMPRESS_FILE', 'Error: Compress file failed');
 define('ERROR_UPLOAD_SCRIPTS', 'Error: Upload scripts failed');
+define('ERROR_UPLOAD_VM_IMAGE', 'Error: Upload VM image failed');
 define('ERROR_SSH_SECURISE', 'Error: SSH securise script failed');
 define('ERROR_SSH_KEY_PATH_NOT_FOUND', 'Error: key SSH path not found in BDD');
 
@@ -27,4 +28,8 @@ define('ERROR_VM_UNKNOW', 'Error: unknow VM.');
 define('ERROR_VM_NOT_READY', 'Error: VM isn\'t ready.');
 
 define('ERROR_ALGO_REQUIREMENT', 'Error: no VM/URL Site.');
+define('ERROR_ALGO_RUN_AUTO_REQUIREMENT', 'Error: no Archive/URL client.');
+define('ERROR_ALGO_RUN_AUTO_NO_VM_AVAILABLE', 'Error: no VM available.');
+
+
 ?>

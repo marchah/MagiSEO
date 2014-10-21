@@ -15,7 +15,9 @@ define('LOG_NB_LIMIT', 10);
 define('PATH_ROOT_WEBSITE', $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/');
 
 define('MASTER_IP', 'marcha@5.135.163.236');
+define('ALGO_SERVER_IP', '127.0.0.1');
 
+define('SERVER_MIN_RAM_REQUIRE', 512);
 
 /*** VM Constantes ***/
 

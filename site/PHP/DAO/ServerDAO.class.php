@@ -8,7 +8,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/DAO/VMDAO.class.php'
 
 class ServerDAO extends DAO {
 	
-	static function insertServer($IPV4, $username, $password, $keysshpath) { // MANQUE BEAUCOUP D'INFO A SAVE
+	static function insertServer($IPV4, $username, $password, $keysshpath) {
             $bdd = parent::ConnectionBDD();
 
             $req = $bdd->prepare('INSERT INTO server_slave (IPV4, username, password, keysshpath) VALUES(:IPV4, :username, :password, :keysshpath)');
@@ -24,7 +24,7 @@ class ServerDAO extends DAO {
             return $bdd->lastInsertId();
 	}
 
-        static function insertServerInfo($idServer, $sizeDiskCurrentMB, $sizeDiskTotalMB, $sizeRAMCurrentKB, $sizeRAMTotalKB, $nbCPUUsed, $nbCPUTotal) {
+        static function insertServerInfo($idServer, $sizeDiskCurrentMB, $sizeDiskTotalMB, $sizeRAMCurrentMB, $sizeRAMTotalMB, $nbCPUUsed, $nbCPUTotal) {
             $bdd = parent::ConnectionBDD();
             
             $req = $bdd->prepare('INSERT INTO server_information (idserver, disk_max_size, disk_current_size, nb_max_proc, nb_current_proc, flash_max_size, flash_current_size) VALUES(:idserver, :disk_max_size, :disk_current_size, :nb_max_proc, :nb_current_proc, :flash_max_size, :flash_current_size)');
@@ -34,8 +34,8 @@ class ServerDAO extends DAO {
                             'disk_current_size' => $sizeDiskCurrentMB,
                             'nb_max_proc' => $nbCPUTotal,
                             'nb_current_proc' => $nbCPUUsed,
-                            'flash_max_size' => $sizeRAMTotalKB,
-                            'flash_current_size' => $sizeRAMCurrentKB
+                            'flash_max_size' => $sizeRAMTotalMB,
+                            'flash_current_size' => $sizeRAMCurrentMB
                     ))) {
                             ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), "", "REQUEST SQL FAILED", "ServerDAO::insertServer()", REPORTING_TYPE_INTERNAL_ERROR, date("Y-m-d H:i:s")));
                             return false;

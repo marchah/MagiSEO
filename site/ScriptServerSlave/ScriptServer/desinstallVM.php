@@ -8,7 +8,7 @@ function desinstallVM($nameVm) {
     
     $return = exec(  "VBoxManage controlvm \"".$nameVm."\" poweroff;"
                     ."sleep 10;"
-                    ."VBoxManage unregistervm \"".$nameVm."\" --delete;"
+                    ."VBoxManage unregistervm --delete \"".$nameVm."\" ;"
                     ."rm -rf ". PATH_VM . $nameVm . ";"
                     ."rm -rf /root/VirtualBox\ VMs/" . $nameVm.";", $output, $return_val);
     echo $return_val . "\n";

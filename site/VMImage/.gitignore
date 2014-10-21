@@ -1,0 +1,6 @@
+# Ignorer tous les image vm (trop lourd)
+*
+# Except lui même
+!.gitignore
+# Except .htaccess
+!.htaccess

@@ -111,7 +111,7 @@ function installVM() {
         sleep(5);
     }
     Cache::write(PATH_CACHE_FILE_INSTALL_VM, INSTALL_VM_STEP_SAVING_BDD);
-    $idVM = VMDAO::getIdVMInProcess();
+    $idVM = VMDAO::getIdVMInProcessing();
     VMDAO::updateVMToDone($idVM, $Server->getId(), $name, 'marcha', 'totoauzoo', $RAM, $HDD);
     VMDAO::deleteVMProcessing();
     Cache::write(PATH_CACHE_FILE_INSTALL_VM, INSTALL_VM_STEP_DONE);

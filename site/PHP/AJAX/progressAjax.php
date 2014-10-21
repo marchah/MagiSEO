@@ -26,6 +26,9 @@ function getStateInstallServer() {
         case INSTALL_SERVER_STEP_UPLOADING_SCRIPTS :
             $msg = "Uploading Scripts";
             break;
+        case INSTALL_SERVER_STEP_UPLOADING_VM_IMAGE :
+            $msg = "Uploading VM Image";
+            break;
         case INSTALL_SERVER_STEP_INSTALLING_SOFTWARES :
             $msg = "Installing Softwares";
             break;

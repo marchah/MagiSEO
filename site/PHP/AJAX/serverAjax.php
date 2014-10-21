@@ -189,7 +189,6 @@ function decompressScriptArchive($ssh) {
 }
 
 function installServerSlave() {
-
     $ipServerSSH = (isset($_POST["ipServerSSH"])) ? $_POST["ipServerSSH"] : "";
     $login = (isset($_POST["login"])) ? $_POST["login"] : "";
     $password = (isset($_POST["password"])) ? $_POST["password"] : "";
