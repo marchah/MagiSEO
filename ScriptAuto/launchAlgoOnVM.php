@@ -18,8 +18,7 @@ function errorHandler($errno, $errstr, $errfile, $errline) {
 $URLClient = (isset($_POST["URLClient"])) ? $_POST["URLClient"] : "";
 $isArchive = (isset($_POST["isArchive"])) ? $_POST["isArchive"] : false;
 
-
-$URLClient = "127.0.0.1";
+//$URLClient = "127.0.0.1";
 
 if (empty($URLClient)) {
     exit(ERROR_ALGO_RUN_AUTO_REQUIREMENT);
@@ -40,11 +39,4 @@ function connectionVMWithPassword($VM) {
 }
 
 $ssh = connectionVMWithPassword($listVM[0]);
-
-// launch script check if this script don't wait
-        //VM: launch script
-        //when done change state to ready
-// DONE
-
-
-
+$ssh->exec('php /home/launchScriptAlgo.php '.$listVM[0]->getId().' '.$URLClient.' '.($isArchive ? 1 : 0).' '.ALGO_SERVER_IP.' > launchScriptAlgo.log &');
