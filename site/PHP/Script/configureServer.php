@@ -10,13 +10,13 @@ require_once 'Crypt/RSA.php';
 require_once 'Net/SSH2.php';
 require_once 'Net/SFTP.php';
 
-
+/*
 set_error_handler('errorHandler', E_USER_NOTICE);
 
 function errorHandler($errno, $errstr, $errfile, $errline) {
     Tools::ReportingError(null, null, "PHPseclib internal error", "errno=". $errno .", ". "errstr=". $errstr .", ". "errfile:". $errfile .", ". "errline:". $errline, REPORTING_TYPE_SLAVE_ERROR, ERROR_SSH_SYSTEM);
 }
-
+*/
 
 
 class installServer {
@@ -182,7 +182,6 @@ class installServer {
            $this->_HDDfree = intval($infoServer[1]) - intval($infoServer[0]);
            ServerDAO::insertServerInfo($this->_idServer, $infoServer[0], $infoServer[1], SERVER_MIN_RAM_REQUIRE, $infoServer[3], $infoServer[4], $infoServer[5]);
         }
-        Cache::write(PATH_CACHE_FILE_INSTALL, INSTALL_SERVER_STEP_DONE);
         ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), $_SESSION['user']->getLogin(), "Install Server Slave $this->_ip", "Success", REPORTING_TYPE_LOG, date("Y-m-d H:i:s")));
         return true;
     }
@@ -290,12 +289,3 @@ class installVM {
         }
     }
 }
-
-$installServer = new installServer("192.168.234.202", "marcha", "totoauzoo");
-if ($installServer->install() === true) {
-    $installVM = new installVM($installServer, 1024, 10000);
-    $installVM->install();
-}
-
-
-//VMDAO::updateVMToDone(151, 2, 'test', 'marcha', 'totoauzoo', '10', '10');

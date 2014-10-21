@@ -120,25 +120,22 @@ function installVM() {
 }
 
 function desinstallVM() {
-    $ipServer = (isset($_POST["ipServer"])) ? $_POST["ipServer"] : "";
-    $ipVM = (isset($_POST["ipVM"])) ? $_POST["ipVM"] : "";
+    $idVM = (isset($_POST["idVM"])) ? $_POST["idVM"] : "";
     
     Cache::write(PATH_CACHE_FILE_DESINSTALL_VM, DESINSTALL_VM_STEP_INIT);
-    if (empty($ipServer) || empty($ipVM)) {
+    if (empty($idVM)) {
         Cache::write(PATH_CACHE_FILE_DESINSTALL_VM, DESINSTALL_VM_STEP_ERROR);
         exit(ERROR_VM_DESINSTALL_MISSING_REQUIREMENT);
     }
 
-    if (($Server = ServerDAO::getServerByIP($ipServer)) == null) {
-        Cache::write(PATH_CACHE_FILE_DESINSTALL_VM, DESINSTALL_VM_STEP_ERROR);
-        exit(ERROR_VM_INVALID_REQUIREMENT);
-    }
-    
-    if (($VM = VMDAO::getVMByIPServerAndIPVM($ipServer, $ipVM)) === false) {
+    if (($VM = VMDAO::getVMByIdVM($idVM)) === false) {
         Cache::write(PATH_CACHE_FILE_DESINSTALL_VM, DESINSTALL_VM_STEP_ERROR);
         exit(ERROR_VM_UNKNOW);
     }
-    
+    if (($Server = ServerDAO::getServerById($VM->getIdServer())) == null) {
+        Cache::write(PATH_CACHE_FILE_DESINSTALL_VM, DESINSTALL_VM_STEP_ERROR);
+        exit(ERROR_VM_INVALID_REQUIREMENT);
+    }    
     Cache::write(PATH_CACHE_FILE_DESINSTALL_VM, DESINSTALL_VM_STEP_CONNECTION_SERVER);
     $ssh = connectionServerWithKey($Server, PATH_CACHE_FILE_DESINSTALL_VM, DESINSTALL_VM_STEP, DESINSTALL_VM_STEP_ERROR);
     Cache::write(PATH_CACHE_FILE_DESINSTALL_VM, DESINSTALL_VM_STEP_DESINSTALLING);
@@ -166,7 +163,6 @@ function cancelVM() {
         Cache::write(PATH_CACHE_FILE_DESINSTALL_VM, DESINSTALL_VM_STEP_ERROR);
         exit(ERROR_VM_INVALID_REQUIREMENT);
     }
-    
     if (($VM = VMDAO::getVMByIPServerAndIPVM($ipServer, $ipVM)) === false) {
         Cache::write(PATH_CACHE_FILE_DESINSTALL_VM, DESINSTALL_VM_STEP_ERROR);
         exit(ERROR_VM_UNKNOW);

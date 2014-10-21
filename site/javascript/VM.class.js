@@ -119,7 +119,7 @@ VM.addVM = function (idServer, name, RAM, HDD, IpAlgo, URLClient, isArchive) {
     });
 }
 
-VM.deleteVM = function (VMPanel, ipServer, ipVM) {
+VM.deleteVM = function (VMPanel, idVM) {
     if ($("#progress-bar-container-vm").css("display") != "none") {
         alert("... Please Wait The End Of The Current Process ...");
         return ;
@@ -128,7 +128,7 @@ VM.deleteVM = function (VMPanel, ipServer, ipVM) {
     $.ajax({
        type: "POST",
        url: urlServer + ajaxFolderPath + "VMAjax.php",
-       data:{nameRequest: "desinstallVM", ipServer: ipServer, ipVM: ipVM},
+       data:{nameRequest: "desinstallVM", idVM: idVM},
        dataType: document.json,
        error: function (xhr) { console.log('error:', xhr.responseText);},
        success: function (str) {
@@ -198,7 +198,7 @@ VM.updateVM = function (ipServer, idVM) {
 var attachEventOnButtonsManageVM = function() {
     $('.remove-vm').click(function(){
         var VMPanel = $(this).parents(".server-panel");
-        VM.deleteVM(VMPanel, (VMPanel.find(".panel-title").text()).split(': ')[1], VMPanel.find(".vm-id").text()); 
+        VM.deleteVM(VMPanel, VMPanel.find(".vm-id").text()); 
     });
     $('.cancel-vm').click(function(){
         var VMPanel = $(this).parents(".server-panel");
@@ -307,13 +307,13 @@ $('#add-vm-button').click(function(){
         Require("Name URL Client Website required", "#add-vm-url-client-sit");
         return ;
     }
-    VM.addVM($("#add-vm-ip-server").val(), $("#add-vm-name").val(), $("#add-vm-ram").val(), $("#add-vm-hdd").val(), $("#add-vm-ip-algo").val(), $("#add-vm-url-client-site").val(), $("#add-vm-is-archive").is(':checked'));
+    VM.addVM($("#add-vm-ip-server").val(), $("#add-vm-name").val(), $("#add-vm-ram").val(), $("#add-vm-hdd").val(), $("#add-vm-ip-algo").val(), $("#add-vm-url-client-site").val(), document.getElementById('add-vm-is-archive').checked);
     $("#add-vm-ip-server").val('');
     $("#add-vm-name").val('');
     $("#add-vm-ram").val('');
     $("#add-vm-hdd").val('');
     $("#add-vm-ip-algo").val('');
     $("#add-vm-url-client-site").val('');
-    //$("#add-vm-is-archive").removeProp('checked');
+    document.getElementById('add-vm-is-archive').checked = false;
     $('#AddVMModal').modal('hide');
 });

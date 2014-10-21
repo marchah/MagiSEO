@@ -8,6 +8,7 @@ require_once PATH_ROOT_WEBSITE . 'PHP/Tools.php';
 require_once PATH_ROOT_WEBSITE . 'PHP/SSHConstances.php';
 require_once PATH_ROOT_WEBSITE . 'PHP/ErrorConstantes.php';
 require_once PATH_ROOT_WEBSITE . 'PHP/Object/Cache.class.php';
+require_once PATH_ROOT_WEBSITE . 'PHP/Script/configureServer.php';
 require_once 'Crypt/RSA.php';
 require_once 'Net/SSH2.php';
 require_once 'Net/SFTP.php';
@@ -202,42 +203,39 @@ function installServerSlave() {
         Cache::write(PATH_CACHE_FILE_INSTALL, INSTALL_SERVER_STEP_ERROR);
         exit(ERROR_SSH_SERVER_ALREADY_CONFIGURATED);
     }
-    set_time_limit(600);
-
-    if (!file_exists(PATH_ROOT_WEBSITE . PATH_MASTER_SCRIPT_SERVER_SLAVE_TO_UPLOAD))
-        mkdir(PATH_ROOT_WEBSITE . PATH_MASTER_SCRIPT_SERVER_SLAVE_TO_UPLOAD);
-    Cache::write(PATH_CACHE_FILE_INSTALL, INSTALL_SERVER_STEP_GENERATE_KEY);
-    generateKey($ipServerSSH);
-    Cache::write(PATH_CACHE_FILE_INSTALL, INSTALL_SERVER_STEP_COMPRESSING_SCRIPTS);
-    cpAndPutConstantesInstallScript($ipServerSSH, $login); // put Constantes in Constantes.php
-    compressFolder();
-    Cache::write(PATH_CACHE_FILE_INSTALL, INSTALL_SERVER_STEP_UPLOADING_SCRIPTS);
-    uploadInstallScripts($ipServerSSH, $login, $password, PATH_CACHE_FILE_INSTALL, INSTALL_SERVER_STEP_ERROR);
-    cleanInstallFolder();
-    $ssh = new Net_SSH2($ipServerSSH);
-    if (!$ssh->login($login, $password)) {
+    $installServer = new installServer($ipServerSSH, $login, $password);//"192.168.234.202", "marcha", "totoauzoo");
+    if ($installServer->install() === true) {
+        Cache::write(PATH_CACHE_FILE_INSTALL, INSTALL_SERVER_STEP_DONE);
+        echo true;
+    }
+    else
         Cache::write(PATH_CACHE_FILE_INSTALL, INSTALL_SERVER_STEP_ERROR);
-        exit(ERROR_SSH_CONNECTION_INVALID_AUTH);
+}
+
+function installServerSlaveAndConfigureVMs() {
+    $ipServerSSH = (isset($_POST["ipServerSSH"])) ? $_POST["ipServerSSH"] : "";
+    $login = (isset($_POST["login"])) ? $_POST["login"] : "";
+    $password = (isset($_POST["password"])) ? $_POST["password"] : "";
+    Cache::write(PATH_CACHE_FILE_INSTALL, INSTALL_SERVER_STEP_INIT);
+    if (empty($ipServerSSH) || empty($login) || empty($password)) {
+        Cache::write(PATH_CACHE_FILE_INSTALL, INSTALL_SERVER_STEP_ERROR);
+        exit(ERROR_SSH_CONNECTION_SERVER_REQUIREMENT);
     }
-    decompressScriptArchive($ssh);
-    Cache::write(PATH_CACHE_FILE_INSTALL, INSTALL_SERVER_STEP_INSTALLING_SOFTWARES);
-    $ssh->read(REGEX_PROMPT, NET_SSH2_READ_REGEX);
-    $ssh->write("./ScriptServer/installSoftware.sh\n");
-    $ssh->read(REGEX_PROMPT, NET_SSH2_READ_REGEX);
-    Cache::write(PATH_CACHE_FILE_INSTALL, INSTALL_SERVER_STEP_SECURING_SSH);
-    $ssh->write("php ./ScriptServer/securiseSSHServerSlave.php\n");
-    $ssh->read(REGEX_PROMPT, NET_SSH2_READ_REGEX);
-    Cache::write(PATH_CACHE_FILE_INSTALL, INSTALL_SERVER_STEP_GETTING_SERVER_INFOS);
-    $idServer = ServerDAO::insertServer($ipServerSSH, $login, $password, PATH_ROOT_WEBSITE . '/' . PATH_MASTER_PRIVATE_KEY_SSH . $ipServerSSH);
-    $ssh->write("php ./ScriptServer/infoServerSlave.php\n");
-    $tab_ret = explode(MSG_DELIMITER, $ssh->read(REGEX_PROMPT, NET_SSH2_READ_REGEX));
-    if (count($tab_ret) == 3) {
-       $infoServer = explode('/', $tab_ret[1]);
-       ServerDAO::insertServerInfo($idServer, $infoServer[0], $infoServer[1], $infoServer[2], $infoServer[3], $infoServer[4], $infoServer[5]);
+
+    if (ServerDAO::isServerExist($ipServerSSH)) {
+        Cache::write(PATH_CACHE_FILE_INSTALL, INSTALL_SERVER_STEP_ERROR);
+        exit(ERROR_SSH_SERVER_ALREADY_CONFIGURATED);
     }
-    Cache::write(PATH_CACHE_FILE_INSTALL, INSTALL_SERVER_STEP_DONE);
-    ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), $_SESSION['user']->getLogin(), "Install Server Slave $ipServerSSH", "Success", REPORTING_TYPE_LOG, date("Y-m-d H:i:s")));
-    echo true;
+    $installServer = new installServer($ipServerSSH, $login, $password);
+    if ($installServer->install() === true) {
+        Cache::write(PATH_CACHE_FILE_INSTALL, INSTALL_SERVER_STEP_CONFIGURING_VMS);
+        $installVM = new installVM($installServer, 1024, 10000);
+        $installVM->install();
+        Cache::write(PATH_CACHE_FILE_INSTALL, INSTALL_SERVER_STEP_DONE_CONFIGURING_VMS);
+        echo true;
+    }
+    else
+        Cache::write(PATH_CACHE_FILE_INSTALL, INSTALL_SERVER_STEP_ERROR);
 }
 
 function desinstallServerSlave() {
@@ -329,6 +327,8 @@ if (isset($_POST["nameRequest"])) {
     Cache::clean(PATH_CACHE_FILE_UPDATE);
     if ($_POST["nameRequest"] == "installServer")
 	installServerSlave();
+    else if ($_POST["nameRequest"] == "installServerSlaveAndConfigureVMs")
+        installServerSlaveAndConfigureVMs();
     else if ($_POST["nameRequest"] == "desinstallServer")
 	desinstallServerSlave();
     else if ($_POST["nameRequest"] == "updateServer")

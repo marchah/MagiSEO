@@ -45,6 +45,30 @@ Server.progressInstall = function () {
     });
 }
 
+Server.progressInstallAndConfigureVMs = function () {
+    $("#progress-bar-container-server").css("display", "block");
+    $.ajax({
+       type: "POST",
+       url: urlServer + ajaxFolderPath + "progressAjax.php",
+       data:{nameRequest: "getStateInstallServerAndConfigureVMs"},
+       dataType: document.json,
+       error: function (xhr) { console.log('error:', xhr.responseText);},
+       success: function (step) {
+                var result = step.split('/');
+                
+                var current = parseInt(result[0]) + 1;
+                var msg = result[1];
+                var max = parseInt(result[2]) + 1;
+                
+                if (current >= 0) { 
+                    var maxSize = parseInt($("#progress-bar-container-server").css("width"));
+                    $("#progress-bar-server-slave").css("width", maxSize / max * current + "px");
+                }
+                $("#state-server-slave").text(msg);
+            }
+    });
+}
+
 Server.progressDesinstall = function () {
     $("#progress-bar-container-server").css("display", "block");
     $.ajax({
@@ -114,6 +138,32 @@ Server.addSlaveServer = function (ipv4, login, password) {
         complete : function() {
             clearInterval(x);
             Server.progressInstall();
+            setTimeout(Server.hideProgressBar, 6000);
+        }
+    });
+}
+
+Server.addSlaveServerAndConfigureVMs = function (ipv4, login, password) {
+    if ($("#progress-bar-container-server").css("display") != "none") {
+        alert("... Please Wait The End Of The Current Process ...");
+        return ;
+    }
+    var x = setInterval(Server.progressInstallAndConfigureVMs, 2000);
+    $.ajax({
+       type: "POST",
+       url: urlServer + ajaxFolderPath + "serverAjax.php",
+       data:{nameRequest: "installServerSlaveAndConfigureVMs", ipServerSSH: ipv4, login: login, password: password},
+       dataType: document.json,
+       error: function (xhr) { console.log('error:', xhr.responseText);},
+       success: function (str) {
+            if (str == true) 
+                setTimeout(Server.displayNewPanelServer, 5000); // très moche PK????
+            else
+                alert(str);
+        },
+        complete : function() {
+            clearInterval(x);
+            Server.progressInstallAndConfigureVMs();
             setTimeout(Server.hideProgressBar, 6000);
         }
     });
@@ -256,10 +306,14 @@ $('#add-slave-server-button').click(function(){
         $("#add-slave-server-password-confirmation").focus();
         return ;
     }
-    Server.addSlaveServer($("#add-slave-server-ip").val(), $("#add-slave-server-login").val(), $("#add-slave-server-password").val());
+    if (document.getElementById('add-slave-server-configure-all-vms').checked)
+        Server.addSlaveServerAndConfigureVMs($("#add-slave-server-ip").val(), $("#add-slave-server-login").val(), $("#add-slave-server-password").val());
+    else
+        Server.addSlaveServer($("#add-slave-server-ip").val(), $("#add-slave-server-login").val(), $("#add-slave-server-password").val());
     $("#add-slave-server-ip").val('');
     $("#add-slave-server-login").val('');
     $("#add-slave-server-password").val('');
     $("#add-slave-server-password-confirmation").val('');
+    document.getElementById('add-slave-server-configure-all-vms').checked = false;
     $('#AddSlaveServerModal').modal('hide');
 });

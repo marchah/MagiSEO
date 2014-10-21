@@ -30,15 +30,15 @@ function getHTMLUserButtonAuth() {
 }
 
 function getHTMLButtonAddServer() {
-      if (isset($_SESSION['auth']) && $_SESSION['auth'] == true)
-		return '<button id="add-slave-server" class="btn btn-info ladda-button ladda-progress mb5" data-style="expand-right">'
-                            .'<span class="ladda-label">Add A Slave Server</span>'
-                            .'<span class="ladda-spinner"></span>'
-                            .'<span class="ladda-spinner"></span>'
-                            .'<div class="ladda-progress" style="width: 100px;"></div>'
-                        .'</button>';
-	http_response_code(401);
-	return false;  
+    if (isset($_SESSION['auth']) && $_SESSION['auth'] == true)
+              return '<button id="add-slave-server" class="btn btn-info ladda-button ladda-progress mb5" data-style="expand-right">'
+                          .'<span class="ladda-label">Add A Slave Server</span>'
+                          .'<span class="ladda-spinner"></span>'
+                          .'<span class="ladda-spinner"></span>'
+                          .'<div class="ladda-progress" style="width: 100px;"></div>'
+                      .'</button>';
+      http_response_code(401);
+      return false;  
 }
 
 function getHTMLButtonsManageServer() {
@@ -160,7 +160,7 @@ function getHTMLPanelNewServer() {
 function getHTMLButtonsManageVM() {
     if (isset($_SESSION['auth']) && $_SESSION['auth'] == true)
 		return '<div class="btn-group">
-                            <button type="button" class="btn btn-danger mb5 cancel-vm"><i class="ico-fire22"></i> Cancel</button>
+                            <button type="button" class="btn btn-danger mb5 remove-vm"><i class="ico-fire22"></i> Delete</button>
                         </div>';
 	http_response_code(401);
 	return false;

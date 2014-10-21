@@ -46,6 +46,49 @@ function getStateInstallServer() {
     echo $step . "/" . $msg . "/" . INSTALL_SERVER_STEP_DONE;
 }
 
+function getStateInstallServerAndConfigureVMs() {
+    $step = Cache::read(PATH_CACHE_FILE_INSTALL);
+    $msg = "";
+    switch ($step)
+    {
+        case INSTALL_SERVER_STEP_ERROR:
+            $msg = "Error";
+            break;
+        case INSTALL_SERVER_STEP_INIT :
+            $msg = "Initialisation";
+            break;
+        case INSTALL_SERVER_STEP_GENERATE_KEY:
+            $msg = "Generate Key";
+            break;
+        case INSTALL_SERVER_STEP_COMPRESSING_SCRIPTS : 
+            $msg = "Compressing Scripts";
+            break;
+        case INSTALL_SERVER_STEP_UPLOADING_SCRIPTS :
+            $msg = "Uploading Scripts";
+            break;
+        case INSTALL_SERVER_STEP_UPLOADING_VM_IMAGE :
+            $msg = "Uploading VM Image";
+            break;
+        case INSTALL_SERVER_STEP_INSTALLING_SOFTWARES :
+            $msg = "Installing Softwares";
+            break;
+        case INSTALL_SERVER_STEP_SECURING_SSH :
+            $msg = "Securise SSH";
+            break;
+        case INSTALL_SERVER_STEP_GETTING_SERVER_INFOS :
+            $msg = "Getting Server Informations";
+            break;
+        case INSTALL_SERVER_STEP_CONFIGURING_VMS :
+            $msg = "Configuring VMs";
+            break;
+        case INSTALL_SERVER_STEP_DONE_CONFIGURING_VMS :
+            $msg = "Install And Configuration Done";
+            break;
+    }
+    
+    echo $step . "/" . $msg . "/" . INSTALL_SERVER_STEP_DONE_CONFIGURING_VMS;
+}
+
 function getStateDesinstallServer() {
     $step = Cache::read(PATH_CACHE_FILE_DESINSTALL);
     $msg = "";
@@ -183,6 +226,8 @@ function getStateUpdateVM() {
 if (isset($_POST["nameRequest"])) {
     if ($_POST["nameRequest"] == "getStateInstallServer")
 	getStateInstallServer();
+    else if ($_POST["nameRequest"] == "getStateInstallServerAndConfigureVMs")
+	getStateInstallServerAndConfigureVMs();
     else if ($_POST["nameRequest"] == "getStateDesinstallServer")
 	getStateDesinstallServer();
     else if ($_POST["nameRequest"] == "getStateUpdateServer")

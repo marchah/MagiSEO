@@ -44,6 +44,11 @@ require_once('include/menu.html');
                                                                         <label for="add-slave-server-password-confirmation">Password Confirmation</label>
                                                                         <input id="add-slave-server-password-confirmation" class="form-control" type="password" name="add-slave-server-password-confirmation" />
                                                                 </div>
+                                                                <div>
+                                                                        <label for="add-slave-server-configure-all-vms" class="checkbox-inline">
+                                                                            <input id="add-slave-server-configure-all-vms" name="add-slave-server-configure-all-vms" type="checkbox"/> Configure All VMs
+                                                                        </label>
+                                                                </div>
                                                         </div>
                                                         <div class="modal-footer">
                                                             <span id="add-slave-server-failed" style="display:none;"></span>
