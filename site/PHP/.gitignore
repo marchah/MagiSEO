@@ -1,2 +1,4 @@
 # Ignorer les constantes de connection à la BDD
 BDDConstantes.php
+# Ignorer les constantes des infos serveurs
+ServerConstantes.php
