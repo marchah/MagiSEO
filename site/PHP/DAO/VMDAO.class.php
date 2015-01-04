@@ -104,7 +104,7 @@ class VMDAO extends DAO {
 
         $req = $bdd->prepare('UPDATE vm SET state=:state WHERE id=:id');
         if (!$req->execute(array(
-                    'state' => VM_STATE_DONE,
+                    'state' => $state,
                     'id' => $id
                 ))) {
             ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), "", "REQUEST SQL FAILED", "ServerDAO::updateStateVM()", REPORTING_TYPE_INTERNAL_ERROR), date("Y-m-d H:i:s"));
@@ -116,25 +116,12 @@ class VMDAO extends DAO {
     static function getListVM() {
         $bdd = parent::ConnectionBDD();
 
-        $reponse = $bdd->query('SELECT vm.*, ss.IPV4 FROM vm vm INNER JOIN server_slave ss ON ss.id = vm.idserver ORDER BY vm.idserver');
+        $reponse = $bdd->query('SELECT vm.*, ss.IPV4, vms.name AS `StateName` FROM vm vm INNER JOIN server_slave ss ON ss.id = vm.idserver INNER JOIN vm_state vms ON vm.state = vms.id ORDER BY vm.idserver, vm.id ASC');
         $listVM = array();
         while ($data = $reponse->fetch()) {
             $VM = new VM($data['id'], $data['idserver'], $data['ip'], $data['port'], $data['name'], $data['username'], $data['password'], $data['ram'], $data['hdd'], $data['state']);
             $VM->setServerIP($data['IPV4']);
-            $listVM[] = $VM;
-        }
-        $reponse->closeCursor();
-        return $listVM;
-    }
-    
-    static function getListVMWorking() {
-        $bdd = parent::ConnectionBDD();
-
-        $reponse = $bdd->query('SELECT vm.*, ss.IPV4 FROM vm vm INNER JOIN server_slave ss ON ss.id = vm.idserver WHERE vm.state='. VM_STATE_USING .' ORDER BY vm.idserver');
-        $listVM = array();
-        while ($data = $reponse->fetch()) {
-            $VM = new VM($data['id'], $data['idserver'], $data['ip'], $data['port'], $data['name'], $data['username'], $data['password'], $data['ram'], $data['hdd'], $data['state']);
-            $VM->setServerIP($data['IPV4']);
+            $VM->setStateName($data['StateName']);
             $listVM[] = $VM;
         }
         $reponse->closeCursor();
@@ -144,11 +131,12 @@ class VMDAO extends DAO {
     static function getListVMByState($state) {
         $bdd = parent::ConnectionBDD();
 
-        $reponse = $bdd->query('SELECT vm.*, ss.IPV4 FROM vm vm INNER JOIN server_slave ss ON ss.id = vm.idserver WHERE vm.state= '.$bdd->quote($state).' ORDER BY vm.idserver');
+	$reponse = $bdd->query('SELECT vm.*, ss.IPV4, vms.name AS `StateName` FROM vm vm INNER JOIN server_slave ss ON ss.id = vm.idserver INNER JOIN vm_state vms ON vm.state = vms.id WHERE vm.state= '.$bdd->quote($state).' ORDER BY vm.idserver, vm.id ASC');
         $listVM = array();
         while ($data = $reponse->fetch()) {
             $VM = new VM($data['id'], $data['idserver'], $data['ip'], $data['port'], $data['name'], $data['username'], $data['password'], $data['ram'], $data['hdd'], $data['state']);
             $VM->setServerIP($data['IPV4']);
+            $VM->setStateName($data['StateName']);
             $listVM[] = $VM;
         }
         $reponse->closeCursor();
@@ -158,11 +146,12 @@ class VMDAO extends DAO {
     static function getNewVM() {
         $bdd = parent::ConnectionBDD();
 
-        $reponse = $bdd->query('SELECT vm.*, ss.IPV4 FROM vm vm INNER JOIN server_slave ss ON ss.id = vm.idserver ORDER BY vm.id DESC LIMIT 1');
+        $reponse = $bdd->query('SELECT vm.*, ss.IPV4, vms.name AS `StateName` FROM vm vm INNER JOIN server_slave ss ON ss.id = vm.idserver INNER JOIN vm_state vms ON vm.state = vms.id ORDER BY vm.id DESC LIMIT 1');
         $VM;
         if ($data = $reponse->fetch()) {
             $VM = new VM($data['id'], $data['idserver'], $data['ip'], $data['port'], $data['name'], $data['username'], $data['password'], $data['ram'], $data['hdd'], $data['state']);
             $VM->setServerIP($data['IPV4']);
+            $VM->setStateName($data['StateName']);
         }
         $reponse->closeCursor();
         return $VM;
@@ -253,5 +242,51 @@ class VMDAO extends DAO {
         }
         return $port;
     }
+
+    static function launchVM() {
+    	   $bdd = parent::ConnectionBDD();
+	   $ret = $bdd->exec('UPDATE vm SET state=3 WHERE state=2 LIMIT 1');
+	   return $ret;
+    }
+
+    static function stopVM($url) {
+    	   $bdd = parent::ConnectionBDD();
+	   $ret = $bdd->exec('UPDATE vm SET state=2 WHERE state=3 LIMIT 1');
+	   return $ret;
+    }
+
+    static function insertResultVM($url) {
+	   $bdd = parent::ConnectionBDD();
+
+/*
+        $req = $bdd->prepare('INSERT INTO vm_results (idvm, stdin, stderr) VALUES (:idserver, :ipserver, :date_begin, :date_end, :porttunnel, :ipmaster, :ipalgo, :urlclient, :isarchive)');
+        if (!$req->execute(array(
+                    'idserver' => $idServer,
+                    'ipserver' => $ipServer,
+                    'date_begin' => $dateBegin,
+                    'date_end' => 0,
+                    'porttunnel' => $port,
+                    'ipmaster' => $ipMaster,
+                    'ipalgo' => $ipAlgo,
+                    'urlclient' => $urlClient,
+                    'isarchive' => ($isArchive === "true" ? 1 : 0)
+                )))*/
+
+	   $bdd->exec('INSERT INTO vm_results SET idvm=8, stdout="Array ( [scheme] => http [host] => '.$url.' [path] => / ) ", stderr="No Error", date=NOW()');
+    }
+
+
+    static function getListVMState() {
+        $bdd = parent::ConnectionBDD();
+
+        $reponse = $bdd->query("SELECT * FROM vm_state");
+
+	$listVMState = array();
+        while ($data = $reponse->fetch())
+            $listVMState[] = $data;
+	$reponse->closeCursor();
+        return $listVMState;
+    }
+
 
 }

@@ -22,5 +22,7 @@ if (isset($_POST["nameRequest"])) {
             echo getHTMLPanelNewVM();
         else if ($_POST["nameRequest"] == "getHTMLButtonLaunchAlgoOnVM")
             echo getHTMLButtonLaunchAlgoOnVM();
+	else if ($_POST["nameRequest"] == "getHTMLPanelVMByState")
+	     echo getHTMLPanelVMByState($_POST['idState']);
 }
 ?>

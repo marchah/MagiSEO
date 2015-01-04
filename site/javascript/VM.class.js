@@ -93,7 +93,7 @@ VM.displayNewPanelVM = function () {
     });
 }
 
-VM.addVM = function (idServer, name, RAM, HDD, IpAlgo, URLClient, isArchive) {
+VM.addVM = function (idServer, name, RAM, HDD/*, IpAlgo, URLClient, isArchive*/) {
     if ($("#progress-bar-container-vm").css("display") != "none") {
         alert("... Please Wait The End Of The Current Process ...");
         return ;
@@ -102,7 +102,7 @@ VM.addVM = function (idServer, name, RAM, HDD, IpAlgo, URLClient, isArchive) {
     $.ajax({
        type: "POST",
        url: urlServer + ajaxFolderPath + "VMAjax.php",
-       data:{nameRequest: "installVM", idServer: idServer, name: name, RAM: RAM, HDD: HDD, IpAlgo: IpAlgo, URLClient : URLClient, isArchive : isArchive},
+       data:{nameRequest: "installVM", idServer: idServer, name: name, RAM: RAM, HDD: HDD},// IpAlgo: IpAlgo, URLClient : URLClient, isArchive : isArchive},
        dataType: document.json,
        error: function (xhr) { console.log('error:', xhr.responseText);},
        success: function (str) {
@@ -299,21 +299,43 @@ $('#add-vm-button').click(function(){
         Require("HDD VM have to be >= " + minSizeHDD, "#add-vm-hdd");
         return ;
     }
-    if ($("#add-vm-ip-algo").val().length < 1) {
+/*    if ($("#add-vm-ip-algo").val().length < 1) {
         Require("Name IP Algo Server required", "#add-vm-ip-algo");
         return ;
     }
     if ($("#add-vm-url-client-site").val().length < 1) {
         Require("Name URL Client Website required", "#add-vm-url-client-sit");
         return ;
-    }
-    VM.addVM($("#add-vm-ip-server").val(), $("#add-vm-name").val(), $("#add-vm-ram").val(), $("#add-vm-hdd").val(), $("#add-vm-ip-algo").val(), $("#add-vm-url-client-site").val(), document.getElementById('add-vm-is-archive').checked);
+    }*/
+    VM.addVM($("#add-vm-ip-server").val(), $("#add-vm-name").val(), $("#add-vm-ram").val(), $("#add-vm-hdd").val()/*, $("#add-vm-ip-algo").val(), $("#add-vm-url-client-site").val(), document.getElementById('add-vm-is-archive').checked*/);
     $("#add-vm-ip-server").val('');
     $("#add-vm-name").val('');
     $("#add-vm-ram").val('');
     $("#add-vm-hdd").val('');
-    $("#add-vm-ip-algo").val('');
+    /*$("#add-vm-ip-algo").val('');
     $("#add-vm-url-client-site").val('');
-    document.getElementById('add-vm-is-archive').checked = false;
+    document.getElementById('add-vm-is-archive').checked = false;*/
     $('#AddVMModal').modal('hide');
 });
+
+VM.loadVMPanel = function(idState) {
+        $.ajax({
+	   type: "POST",
+	   url: urlServer + ajaxFolderPath + "getHTMLCodeAjax.php",
+	   data:{nameRequest: "getHTMLPanelVMByState", idState: idState},
+	   dataType: document.json,
+	   error: function (xhr) { if (xhr.status == 401) alert('Error: ' + xhr.statusText); console.log('error:', xhr.responseText); },
+	   success: function (HTMLCode) {
+			$("#list-panel").empty();
+			$('#list-panel').append(HTMLCode);
+		}
+	});
+};
+
+$('#selectVMState').change(function() {
+    var idx = this.selectedIndex;
+    VM.loadVMPanel(idx);
+    console.log(idx);
+    //$("select#selected").prop('selectedIndex', idx);  
+});
+

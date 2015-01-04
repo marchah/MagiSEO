@@ -5,6 +5,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/DAO/ServerDAO.class.
 require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/DAO/VMDAO.class.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/Object/Report.class.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/DAO/ReportDAO.class.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/MagiSEO/site/PHP/DAO/AlgoDAO.class.php';
 
 function getHTMLUserButtonAuth() {
 	if (isset($_SESSION['auth']) && $_SESSION['auth'] == true)
@@ -210,6 +211,12 @@ function getHTMLPanelVM($VM) {
 								</div>
 							</div>
                                                         <div class="form-group">
+								<label class="col-sm-3 control-label">State</label>
+								<div class="col-sm-9">
+									<p class="form-control-static vm-state">'. $VM->getStateName() .'</p>
+								</div>
+							</div>
+                                                        <div class="form-group">
 								<label class="col-sm-3 control-label">Port</label>
 								<div class="col-sm-9">
 									<p class="form-control-static vm-port">'. $VM->getPort() .'</p>
@@ -250,78 +257,20 @@ function getHTMLAllPanelVM() {
     }
     return $HTMLAllPanelVM;
 }
-/*
-function getHTMLPanelRunningVM($VM) {
-    return '<div class="col-md-4 server-panel">
-			<!-- START panel -->
-			<div class="panel panel-default">
-				<!-- panel heading/header -->
-				<div class="panel-heading">
-					<h3 class="panel-title">Server: '. $VM->getServerIP() .'</h3>
-					<!-- panel toolbar -->
-					<div class="panel-toolbar text-right panel-toolbar-vm">
-						<!-- option -->
-						<div class="option">
-							<button class="btn up" data-toggle="panelcollapse"><i class="arrow"></i></button>
-						</div>
-						<!--/ option -->
-					</div>
-					<!--/ panel toolbar -->
-				</div>
-				<!--/ panel heading/header -->
-				
-				<!-- panel body with collapse capable -->
-				<div style="" class="panel-collapse in pull out">
-					<div class="panel-body">
-						<div class="form-horizontal form-bordered">
-							<div class="form-group">
-								<label class="col-sm-3 control-label">IPV4</label>
-								<div class="col-sm-9">
-									<p class="form-control-static vm-ip">'. $VM->getIP() .'</p>
-								</div>
-							</div>
-							
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Name</label>
-								<div class="col-sm-9">
-									<p class="form-control-static">'. $VM->getName() .'</p>
-								</div>
-							</div>
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Disk Size</label>
-								<div class="col-sm-9">
-									<p class="form-control-static">'. $VM->getHDD() .'</p>
-								</div>
-							</div>
-							<div class="form-group">
-								<label class="col-sm-3 control-label">RAM Size</label>
-								<div class="col-sm-9">
-									<p class="form-control-static">'. $VM->getRAM() .'</p>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-				<!--/ panel body with collapse capabale -->
 
-				<!-- Loading indicator -->
-				<div class="indicator"><span class="spinner"></span></div>
-				<!--/ Loading indicator -->
-			</div>
-			<!--/ END panel -->
-		</div>';
-}
+function getHTMLPanelVMByState($state) {
+    if ($state <= 0)
+        $listVM = VMDAO::getListVM();
+    else
+	$listVM = VMDAO::getListVMByState($state);
 
-function getHTMLAllPanelRunningVM() {
-    $listRunningVM = VMDAO::getListVMByState(VM_STATE_USING);
-
-    $HTMLPanelRunningVM = "";
-    foreach($listRunningVM as $VM) {
-        $HTMLPanelRunningVM .= getHTMLPanelRunningVM($VM);
+    $HTMLAllPanelVM = "";
+    foreach($listVM as $VM) {
+        $HTMLAllPanelVM .= getHTMLPanelVM($VM);
     }
-    return $HTMLPanelRunningVM;
+    return $HTMLAllPanelVM;
 }
-*/
+
 function getHTMLPanelNewVM() {
     return getHTMLPanelVM(VMDAO::getNewVM());
 }
@@ -348,6 +297,17 @@ function getHTMLButtonAddVM() {
                         .'</button>';
 	http_response_code(401);
 	return false;  
+}
+
+function getHTMLSelectVMState() {
+    $listVMState = VMDAO::getListVMState();
+    $select = '<select id="selectVMState" class="form-control" style="width: 150px; display: inline-block; float: right">';
+    $select .= '<option value="0">All</option>';
+    foreach ($listVMState as $state){
+    	    $select .= '<option value="'.$state['id'].'">'.$state['name'].'</option>';
+    }
+    $select .= '</select>';
+    return $select;
 }
 
 function getStyleLabelTypeReport($type) {
@@ -413,6 +373,58 @@ function getHTMLTableAllReport() {
     }
     $HTMLTableAllReport .= '</tbody>';
     return $HTMLTableAllReport;
+}
+
+function getHTMLPanelAlgoResult($algoResult, $count) {
+    return '<div class="panel panel-default">
+            	 <div class="panel-heading">
+                      <h4 class="panel-title">
+                      	  <a data-toggle="collapse" data-parent="#accordion1" href="#collapse'.$count.'" class="collapsed">
+                             <span class="arrow mr5"></span> Result On '.$algoResult['date'].'
+                          </a>
+                      </h4>
+                 </div>
+                 <div style="height: 0px;" id="collapse'.$count.'" class="panel-collapse collapse">
+                      <div class="panel-body">
+
+
+
+                        <!-- section header -->
+                        <div class="section-header mb15">
+                            <h5 class="semibold">VM Name: '.$algoResult['nameVM'].'</h5>
+                        </div>
+                        <!--/ section header -->
+                        <!-- tab -->
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a href="#popular'.$count.'" data-toggle="tab">Stdout</a></li>
+                            <li class=""><a href="#comments'.$count.'" data-toggle="tab">Stderr</a></li>
+                        </ul>
+                        <!--/ tab -->
+                        <!-- tab content -->
+                        <div class="tab-content panel">
+                            <div class="tab-pane active" id="popular'.$count.'">
+			    '.$algoResult['stdout'].'
+                            </div>
+                            <div class="tab-pane" id="comments'.$count.'">
+			    '.$algoResult['stderr'].'
+                            </div>
+                        </div>
+                        <!--/ tab content -->
+                    
+
+                      </div>
+                 </div>
+            </div>';
+}
+
+function getHTMLAllPanelAlgoResult() {
+    $listAlgoResult = AlgoDAO::getListAlgoResult();
+    $listPanel = "";
+    $count = 1;
+    foreach($listAlgoResult as $algoResult) {
+    	$listPanel .= getHTMLPanelAlgoResult($algoResult, $count++);
+    }
+    return $listPanel;
 }
 
 ?>

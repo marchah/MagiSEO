@@ -13,7 +13,10 @@ require_once('include/menu.html');
 				<!-- Page Header -->
 				<div class="page-header page-header-block">
 					<div class="page-header-section">
-						<h4 class="title semibold">Informations VMs</h4>
+						<h4 class="title semibold" style="display: inline-block">Informations VMs</h4>
+					     <?php
+						echo getHTMLSelectVMState();
+				     	     ?>
 					</div>
 				</div>
 				<!-- Page Header -->
@@ -51,7 +54,7 @@ require_once('include/menu.html');
                                                                         <label for="add-vm-hdd">HDD Size</label>
                                                                         <input id="add-vm-hdd" class="form-control" type="input" name="add-vm-hdd" />
                                                                 </div>
-                                                                <div>
+                                                             <!--   <div>
                                                                         <label for="add-vm-ip-algo">IP Algo Server</label>
                                                                         <input id="add-vm-ip-algo" class="form-control" type="input" name="add-vm-ip-algo" />
                                                                 </div>
@@ -63,7 +66,7 @@ require_once('include/menu.html');
                                                                         <label for="add-vm-is-archive" class="checkbox-inline">
                                                                             <input id="add-vm-is-archive" name="add-vm-is-archive" type="checkbox"> Is Archive
                                                                         </label>
-                                                                </div>
+                                                                </div> -->
                                                         </div>
                                                         <div class="modal-footer">
                                                             <span id="add-vm-failed" style="display:none;"></span>
@@ -88,7 +91,6 @@ require_once('include/menu.html');
                                             echo getHTMLButtonAddVM();
                                     ?>
                                 </div>
-
                                 
 				<div id="list-panel" class="row">
 					<!-- START Left Side (Informations VMs) -->

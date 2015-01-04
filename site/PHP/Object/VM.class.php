@@ -12,6 +12,7 @@ class VM {
     private $_HDD;
     private $_state;
     private $_serverIP;
+    private $_stateName;
         
     public function __construct($id, $idServer, $ip, $port, $name, $username, $password, $RAM, $HDD, $state) {
         $this->_id = $id;
@@ -37,6 +38,7 @@ class VM {
     public function getHDD()        {return $this->_HDD;}
     public function getState()      {return $this->_state;}
     public function getServerIP()   {return $this->_serverIP;}
+    public function getStateName()  {return $this->_stateName;}
 
     public function setId($id)              {$this->_id = $id;}
     public function setIdServer($idServer)  {$this->_idServer = $idServer;}
@@ -49,4 +51,5 @@ class VM {
     public function setHDD($HDD)            {$this->_HDD = $HDD;}
     public function setState($state)        {$this->_state = $state;}
     public function setServerIP($serverIP)  {$this->_serverIP = $serverIP;}
+    public function setStateName($stateName)  {$this->_stateName = $stateName;}
 }

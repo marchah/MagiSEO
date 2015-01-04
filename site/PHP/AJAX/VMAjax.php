@@ -58,8 +58,8 @@ function installVM() {
     $name = (isset($_POST["name"])) ? $_POST["name"] : "";
     $RAM = (isset($_POST["RAM"])) ? $_POST["RAM"] : "";
     $HDD = (isset($_POST["HDD"])) ? $_POST["HDD"] : "";
-    $IpAlgo = (isset($_POST["IpAlgo"])) ? $_POST["IpAlgo"] : "";
-    $URLClient = (isset($_POST["URLClient"])) ? $_POST["URLClient"] : "";
+    $IpAlgo = (isset($_POST["IpAlgo"])) ? $_POST["IpAlgo"] : "212.227.107.96";
+    $URLClient = (isset($_POST["URLClient"])) ? $_POST["URLClient"] : "www.cottonsociety.com";
     $isArchive = (isset($_POST["isArchive"])) ? $_POST["isArchive"] : false;
     Cache::write(PATH_CACHE_FILE_INSTALL_VM, INSTALL_VM_STEP_INIT);
     if (empty($idServer) || empty($name) || empty($RAM) || empty($HDD) || empty($IpAlgo) || empty($URLClient)) {

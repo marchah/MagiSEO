@@ -16,9 +16,11 @@ function errorHandler($errno, $errstr, $errfile, $errline) {
 }
 
 $URLClient = (isset($_POST["URLClient"])) ? $_POST["URLClient"] : "";
-$isArchive = (isset($_POST["isArchive"])) ? $_POST["isArchive"] : false;
+$isArchive = (isset($_POST["isArchive"])) ? $_POST["isArchive"] : 0;
 
-//$URLClient = "127.0.0.1";
+$URLClient = gethostbyname(parse_url($URLClient, PHP_URL_HOST));
+
+echo $URLClient . "<br />";
 
 if (empty($URLClient)) {
     exit(ERROR_ALGO_RUN_AUTO_REQUIREMENT);
@@ -28,6 +30,7 @@ $listVM = VMDAO::getListVMByState(VM_STATE_DONE);
 if (count($listVM) <= 0) {
     exit(ERROR_ALGO_RUN_AUTO_NO_VM_AVAILABLE);
 }
+
 VMDAO::updateStateVM($listVM[0]->getId(), VM_STATE_USING);
 
 function connectionVMWithPassword($VM) {
@@ -37,6 +40,9 @@ function connectionVMWithPassword($VM) {
     }
     return $ssh;
 }
-
+echo "idVM: " . $listVM[0]->getId() . "<br />";
 $ssh = connectionVMWithPassword($listVM[0]);
-$ssh->exec('php /home/launchScriptAlgo.php '.$listVM[0]->getId().' '.$URLClient.' '.($isArchive ? 1 : 0).' '.ALGO_SERVER_IP.' > launchScriptAlgo.log &');
+//echo $ssh->read(REGEX_PROMPT, NET_SSH2_READ_REGEX);
+$str = 'php /home/marcha/launchScriptAlgo.php '.$listVM[0]->getId().' '.$URLClient.' '.$isArchive.' '.ALGO_SERVER_IP.' > launchScriptAlgo.log &';
+//echo $str;
+$ssh->exec($str);
