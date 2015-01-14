@@ -251,11 +251,23 @@ class VMDAO extends DAO {
 
     static function stopVM($url) {
     	   $bdd = parent::ConnectionBDD();
-	   $ret = $bdd->exec('UPDATE vm SET state=2 WHERE state=3 LIMIT 1');
-	   return $ret;
+
+	   $idVM = false;
+        $reponse = $bdd->query('SELECT id FROM vm where state=3 LIMIT 1');
+        if ($data = $reponse->fetch()) {
+            $idVM = $data['id'];
+        }
+        $reponse->closeCursor();
+	if ($idVM == false)
+		return false;
+	$ret = $bdd->exec('UPDATE vm SET state=2 WHERE id=' . $idVM);
+	if ($ret != 1)
+	return false;
+
+	return $idVM;
     }
 
-    static function insertResultVM($url) {
+    static function insertResultVM($url, $idVM) {
 	   $bdd = parent::ConnectionBDD();
 
 /*
@@ -272,7 +284,7 @@ class VMDAO extends DAO {
                     'isarchive' => ($isArchive === "true" ? 1 : 0)
                 )))*/
 
-	   $bdd->exec('INSERT INTO vm_results SET idvm=8, stdout="Array ( [scheme] => http [host] => '.$url.' [path] => / ) ", stderr="No Error", date=NOW()');
+	   $bdd->exec('INSERT INTO vm_results SET idvm='.$idVM.', stdout="Array ( [scheme] => http [host] => '.$url.' [path] => / ) ", stderr="No Error", date=NOW()');
     }
 
 

@@ -15,8 +15,8 @@ else if (isset($_GET["type"]) && $_GET["type"] == "stop") {
      $url = isset($_GET["url"]) ? $_GET["url"] : "";
 
      $ret = VMDAO::stopVM($url);
-   if ($ret == 1) {
-      VMDAO::insertResultVM($url);
+   if ($ret != false) {
+      VMDAO::insertResultVM($url, $ret);
       	echo 'true';
 	}
    else
