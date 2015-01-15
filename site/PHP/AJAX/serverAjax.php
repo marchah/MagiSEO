@@ -30,7 +30,7 @@ set_error_handler('errorHandler', E_USER_NOTICE);
 
 function errorHandler($errno, $errstr, $errfile, $errline) {
     ReportDAO::insertReport(new Report(0, $_SESSION['user']->getId(), $_SESSION['user']->getLogin(), "PHPseclib internal error", "errno=". $errno .", ". "errstr=". $errstr .", ". "errfile:". $errfile .", ". "errline:". $errline, REPORTING_TYPE_SLAVE_ERROR, date("Y-m-d H:i:s")));
-    cleanInstallFolder();
+    installServer.cleanInstallFolder();
     exit(ERROR_SSH_SYSTEM);
 }
 
@@ -265,6 +265,8 @@ function desinstallServerSlave() {
         exit(ERROR_SSH_CONNECTION_INVALID_AUTH);
     }
     Cache::write(PATH_CACHE_FILE_DESINSTALL, DESINSTALL_SERVER_STEP_DESECURING_SSH);
+    $ssh->read(REGEX_PROMPT, NET_SSH2_READ_REGEX);
+    $ssh->write("./ScriptServer/deconfigureVPN.sh\n");
     $ssh->read(REGEX_PROMPT, NET_SSH2_READ_REGEX);
     $ssh->write("./ScriptServer/desinstallServerSlave.sh\n");
     $ssh->read(REGEX_PROMPT, NET_SSH2_READ_REGEX);

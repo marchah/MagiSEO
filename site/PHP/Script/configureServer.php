@@ -94,7 +94,7 @@ class installServer {
         file_put_contents(PATH_ROOT_WEBSITE . PATH_MASTER_SCRIPT_SERVER_SLAVE_TO_UPLOAD . '/updateServerSlave.sh', $str_old);
     }
     
-    private function cleanInstallFolder() {
+    public static function cleanInstallFolder() {
         $folder = opendir(PATH_ROOT_WEBSITE . PATH_MASTER_SCRIPT_SERVER_SLAVE_TO_UPLOAD);
         while ($file = readdir($folder)) {
             if ($file != "." && $file != "..")
@@ -141,6 +141,8 @@ class installServer {
         $ssh->exec("chmod +x ScriptServer/installSoftware.sh");
         $ssh->exec("chmod +x ScriptServer/desinstallServerSlave.sh");
         $ssh->exec("chmod +x ScriptServer/updateServerSlave.sh");
+        $ssh->exec("chmod +x ScriptServer/configureVPN.sh");
+        $ssh->exec("chmod +x ScriptServer/deconfigureVPN.sh");
     }
     
     public function install() {
@@ -170,6 +172,8 @@ class installServer {
         $ssh->read(REGEX_PROMPT, NET_SSH2_READ_REGEX);
         Cache::write(PATH_CACHE_FILE_INSTALL, INSTALL_SERVER_STEP_SECURING_SSH);
         $ssh->write("php ./ScriptServer/securiseSSHServerSlave.php\n");
+        $ssh->read(REGEX_PROMPT, NET_SSH2_READ_REGEX);
+        $ssh->write("./ScriptServer/configureVPN.sh\n");
         $ssh->read(REGEX_PROMPT, NET_SSH2_READ_REGEX);
         Cache::write(PATH_CACHE_FILE_INSTALL, INSTALL_SERVER_STEP_GETTING_SERVER_INFOS);
         $this->_keySSHPath = PATH_ROOT_WEBSITE . '/' . PATH_MASTER_PRIVATE_KEY_SSH . $this->_ip;
